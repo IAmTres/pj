@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.3s ease-out forwards;
+        }
+
+        /* Card hover effects */
+        .hover-card {
+            transition: all 0.3s ease;
+        }
+
+        .hover-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        /* Progress bar animations */
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+
+        /* Modal animations */
+        .modal-overlay {
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+        }
+
+        .modal-content.active {
+            transform: translateY(0);
+        }
+
+        /* Button hover effects */
+        .button-hover {
+            transition: all 0.2s ease;
+        }
+
+        .button-hover:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Checkbox custom style */
+        .custom-checkbox {
+            appearance: none;
+            width: 1.2em;
+            height: 1.2em;
+            border: 2px solid #0ea5e9;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #0ea5e9;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 0.8em;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        .toast-success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast-error {
+            border-left: 4px solid #ef4444;
+        }
+
+        /* Gradient backgrounds */
+        .gradient-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        }
+
+        .gradient-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        /* Glass morphism effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #0ea5e9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            font-size: 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        /* Input focus effects */
+        .input-focus-effect {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .input-focus-effect:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+            outline: none;
+        }
+
+        /* Card stacking effect */
+        .card-stack {
+            position: relative;
+        }
+
+        .card-stack::before,
+        .card-stack::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: inherit;
+            z-index: -1;
+        }
+
+        .card-stack::before {
+            bottom: -4px;
+            right: -4px;
+            opacity: 0.4;
+        }
+
+        .card-stack::after {
+            bottom: -8px;
+            right: -8px;
+            opacity: 0.2;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-primary-600 text-2xl font-bold">MindJournal</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300 px-3">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="ml-3 relative">
+                        <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Banner -->
+        <div class="mb-8 p-6 rounded-2xl gradient-primary text-white">
+            <div id="welcomeHeader" class="mb-4"></div>
+            <div id="userStats" class="text-white/90"></div>
+        </div>
+
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Left Sidebar -->
+            <div class="col-span-3 space-y-8">
+                <!-- Personal Library -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 hover-card card-stack">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">Personal Library</h2>
+                        <button onclick="showAddBookModal()" 
+                                class="text-primary-600 hover:text-primary-700 button-hover p-2 rounded-lg"
+                                data-tooltip="Add new book">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="booksList" class="space-y-4">
+                        <!-- Books will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Goals & Aspirations -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 hover-card card-stack">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">Goals & Aspirations</h2>
+                        <button onclick="showAddGoalModal()" 
+                                class="text-primary-600 hover:text-primary-700 button-hover p-2 rounded-lg"
+                                data-tooltip="Add new goal">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="goalsList" class="space-y-4">
+                        <!-- Goals will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-span-6">
+                <!-- Welcome Section -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    <div id="welcomeHeader" class="mb-6">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-gray-50 rounded-lg p-4 text-center hover:bg-gray-100 transition-colors">
+                            <div class="text-3xl font-bold text-primary-600" id="totalEntries">0</div>
+                            <div class="text-sm text-gray-600 mt-1">Total Entries</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 text-center hover:bg-gray-100 transition-colors">
+                            <div class="text-3xl font-bold text-primary-600" id="dayStreak">0</div>
+                            <div class="text-sm text-gray-600 mt-1">Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Journal Entries Section -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 hover-card card-stack">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">Journal Entries</h2>
+                            <p class="text-sm text-gray-500 mt-1" id="entriesCount">Loading entries...</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="showJournalStats()" 
+                                    class="px-3 py-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-all button-hover"
+                                    data-tooltip="View Journal Statistics">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                            <a href="new-journal-entry.html" 
+                               class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-all button-hover flex items-center gap-2">
+                                <i class="fas fa-plus"></i>
+                                <span>New Entry</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Filters -->
+                    <div class="mb-6 space-y-4">
+                        <!-- Time Filter -->
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="filterEntries('all')" 
+                                    class="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-all button-hover">
+                                <i class="fas fa-infinity mr-1"></i> All
+                            </button>
+                            <button onclick="filterEntries('today')" 
+                                    class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all button-hover">
+                                <i class="fas fa-sun mr-1"></i> Today
+                            </button>
+                            <button onclick="filterEntries('week')" 
+                                    class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all button-hover">
+                                <i class="fas fa-calendar-week mr-1"></i> This Week
+                            </button>
+                            <button onclick="filterEntries('month')" 
+                                    class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all button-hover">
+                                <i class="fas fa-calendar-alt mr-1"></i> This Month
+                            </button>
+                            <button onclick="filterEntries('custom')" 
+                                    class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all button-hover">
+                                <i class="fas fa-calendar-plus mr-1"></i> Custom Range
+                            </button>
+                        </div>
+
+                        <!-- Additional Filters -->
+                        <div class="flex gap-4 items-center">
+                            <!-- Mood Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mood</label>
+                                <select id="moodFilter" onchange="applyFilters()" 
+                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <option value="all">All Moods</option>
+                                    <option value="😊">😊 Happy</option>
+                                    <option value="😐">😐 Neutral</option>
+                                    <option value="😔">😔 Sad</option>
+                                    <option value="😡">😡 Angry</option>
+                                    <option value="😴">😴 Tired</option>
+                                </select>
+                            </div>
+
+                            <!-- Energy Level Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Energy Level</label>
+                                <select id="energyFilter" onchange="applyFilters()" 
+                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <option value="all">All Levels</option>
+                                    <option value="high">High (8-10)</option>
+                                    <option value="medium">Medium (4-7)</option>
+                                    <option value="low">Low (1-3)</option>
+                                </select>
+                            </div>
+
+                            <!-- Activity Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Activity</label>
+                                <select id="activityFilter" onchange="applyFilters()" 
+                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <option value="all">All Activities</option>
+                                    <option value="exercise">Exercise</option>
+                                    <option value="meditation">Meditation</option>
+                                    <option value="reading">Reading</option>
+                                    <option value="work">Work</option>
+                                    <option value="social">Social</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="relative">
+                            <input type="text" id="searchEntries" 
+                                   placeholder="Search journal entries..." 
+                                   onkeyup="applyFilters()"
+                                   class="w-full px-4 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Journal Entries Container -->
+                    <div id="journalEntries" class="space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+                        <!-- Entries will be loaded here -->
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noEntriesMessage" class="hidden text-center py-8">
+                        <div class="text-gray-400 mb-3">
+                            <i class="fas fa-book-open text-4xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">No entries found</h3>
+                        <p class="text-gray-500">Try adjusting your filters or create a new entry</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Food & Drink Tracker -->
+            <div class="col-span-3 space-y-8">
+                <div class="bg-white rounded-2xl shadow-lg p-6 hover-card card-stack">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">Food & Drink Tracker</h2>
+                        <div class="flex gap-2">
+                            <button onclick="showAddFoodModal()" 
+                                    class="text-primary-600 hover:text-primary-700 button-hover p-2 rounded-lg"
+                                    data-tooltip="Add Food/Drink">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button onclick="showNutritionStats()" 
+                                    class="text-primary-600 hover:text-primary-700 button-hover p-2 rounded-lg"
+                                    data-tooltip="View Nutrition Stats">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Nutrition Progress -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Daily Goals</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Calories</span>
+                                    <span id="calorieProgress">0/2000</span>
+                                </div>
+                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="calorieProgressBar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Protein</span>
+                                    <span id="proteinProgress">0/60g</span>
+                                </div>
+                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="proteinProgressBar" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>Water</span>
+                                    <span id="waterProgress">0/2000ml</span>
+                                </div>
+                                <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="waterProgressBar" class="h-full bg-cyan-500 transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meal Categories -->
+                    <div class="mb-6 space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        <div id="breakfastSection">
+                            <h3 class="text-sm font-semibold text-gray-700 flex items-center justify-between">
+                                <span>🌅 Breakfast</span>
+                                <span class="text-xs text-gray-500" id="breakfastCalories">0 cal</span>
+                            </h3>
+                            <div class="mt-2 space-y-2" id="breakfastItems"></div>
+                        </div>
+
+                        <div id="lunchSection">
+                            <h3 class="text-sm font-semibold text-gray-700 flex items-center justify-between">
+                                <span>🌞 Lunch</span>
+                                <span class="text-xs text-gray-500" id="lunchCalories">0 cal</span>
+                            </h3>
+                            <div class="mt-2 space-y-2" id="lunchItems"></div>
+                        </div>
+
+                        <div id="dinnerSection">
+                            <h3 class="text-sm font-semibold text-gray-700 flex items-center justify-between">
+                                <span>🌙 Dinner</span>
+                                <span class="text-xs text-gray-500" id="dinnerCalories">0 cal</span>
+                            </h3>
+                            <div class="mt-2 space-y-2" id="dinnerItems"></div>
+                        </div>
+
+                        <div id="snacksSection">
+                            <h3 class="text-sm font-semibold text-gray-700 flex items-center justify-between">
+                                <span>🍪 Snacks</span>
+                                <span class="text-xs text-gray-500" id="snacksCalories">0 cal</span>
+                            </h3>
+                            <div class="mt-2 space-y-2" id="snackItems"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Add Water -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Quick Add Water</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="addWater(250, this)" 
+                                    class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm button-hover"
+                                    data-tooltip="Add 250ml of water">
+                                <i class="fas fa-tint mr-1"></i> 250ml
+                            </button>
+                            <button onclick="addWater(500, this)" 
+                                    class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm button-hover"
+                                    data-tooltip="Add 500ml of water">
+                                <i class="fas fa-tint mr-1"></i> 500ml
+                            </button>
+                            <button onclick="addWater(1000, this)" 
+                                    class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm button-hover"
+                                    data-tooltip="Add 1000ml of water">
+                                <i class="fas fa-tint mr-1"></i> 1000ml
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Food Modal -->
+        <div id="addFoodModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal-overlay">
+            <div class="bg-white rounded-lg p-6 w-[32rem] transform translate-y-4 opacity-0 transition-all duration-300 modal-content glass-effect" 
+                 onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full gradient-primary flex items-center justify-center">
+                            <i class="fas fa-utensils text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Add Food/Drink</h3>
+                    </div>
+                    <button onclick="hideAddFoodModal()" 
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="addFoodForm" onsubmit="addFoodItem(event)">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Item Name</label>
+                            <input type="text" id="foodName" required 
+                                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="foodCategory" 
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <option value="breakfast">🌅 Breakfast</option>
+                                <option value="lunch">🌞 Lunch</option>
+                                <option value="dinner">🌙 Dinner</option>
+                                <option value="snack">🍪 Snack</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Calories</label>
+                            <div class="relative">
+                                <input type="number" id="foodCalories" required min="0" 
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <span class="absolute right-3 top-2 text-gray-500 text-sm">cal</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Protein</label>
+                            <div class="relative">
+                                <input type="number" id="foodProtein" min="0" 
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <span class="absolute right-3 top-2 text-gray-500 text-sm">g</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Serving Size</label>
+                            <input type="text" id="servingSize" placeholder="e.g., 1 cup" 
+                                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                        <textarea id="foodNotes" rows="2" 
+                                  class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                  placeholder="Optional: Add any notes about this food item"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="hideAddFoodModal()" 
+                                class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium">
+                            Add Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Book Modal -->
+        <div id="addBookModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal-overlay">
+            <div class="bg-white rounded-lg p-6 w-[28rem] transform translate-y-4 opacity-0 transition-all duration-300 modal-content glass-effect" 
+                 onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full gradient-primary flex items-center justify-center">
+                            <i class="fas fa-book text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Add Book</h3>
+                    </div>
+                    <button onclick="hideAddBookModal()" 
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="addBookForm" onsubmit="addBook(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                        <input type="text" id="bookTitle" required class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Author</label>
+                        <input type="text" id="bookAuthor" required class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select id="bookStatus" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="reading">Currently Reading</option>
+                            <option value="completed">Completed</option>
+                            <option value="wishlist">Want to Read</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="hideAddBookModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Add Book</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Goal Modal -->
+        <div id="addGoalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 modal-overlay">
+            <div class="bg-white rounded-lg p-6 w-[28rem] transform translate-y-4 opacity-0 transition-all duration-300 modal-content glass-effect" 
+                 onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full gradient-primary flex items-center justify-center">
+                            <i class="fas fa-flag text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Add Goal</h3>
+                    </div>
+                    <button onclick="hideAddGoalModal()" 
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="addGoalForm" onsubmit="addGoal(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Goal Title</label>
+                        <input type="text" id="goalTitle" required class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Target Date</label>
+                        <input type="date" id="goalTargetDate" required class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select id="goalCategory" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="personal">Personal</option>
+                            <option value="career">Career</option>
+                            <option value="health">Health</option>
+                            <option value="education">Education</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="hideAddGoalModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Add Goal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type} animate-slide-in`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-green-500' : 'exclamation-circle text-red-500'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function addLoadingState(button, loading = true) {
+            const originalContent = button.innerHTML;
+            if (loading) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <div class="loading-spinner mr-2"></div>
+                    Loading...
+                `;
+            } else {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+        }
+
+        function formatTimeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60,
+                second: 1
+            };
+
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
+                }
+            }
+            return 'just now';
+        }
+
+        function getStoredData(key, defaultValue = []) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : defaultValue;
+        }
+
+        function setStoredData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Dashboard initialization
+        function initializeDashboard() {
+            const user = getStoredData('currentUser', {});
+            if (!user.name) {
+                window.location.href = 'user-login.html';
+                return;
+            }
+
+            document.getElementById('welcomeHeader').innerHTML = `
+                <h1 class="text-2xl font-bold text-gray-900">Welcome back, ${user.name}! 👋</h1>
+            `;
+
+            const stats = getStoredData('userStats', {
+                totalEntries: 0,
+                streakDays: 0,
+                lastEntry: null
+            });
+
+            document.getElementById('userStats').innerHTML = `
+                <div class="flex gap-6">
+                    <div>
+                        <i class="fas fa-book-open text-primary-600 mr-2"></i>
+                        ${stats.totalEntries} Total Entries
+                    </div>
+                    <div>
+                        <i class="fas fa-fire text-primary-600 mr-2"></i>
+                        ${stats.streakDays} Day Streak
+                    </div>
+                    ${stats.lastEntry ? `
+                        <div>
+                            <i class="fas fa-clock text-primary-600 mr-2"></i>
+                            Last Entry: ${formatDate(stats.lastEntry)}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Food tracking functions
+        function showAddFoodModal() {
+            const modal = document.getElementById('addFoodModal');
+            const content = modal.querySelector('.modal-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Trigger animation
+            setTimeout(() => {
+                modal.classList.add('active');
+                content.classList.add('active');
+                content.style.transform = 'translateY(0)';
+                content.style.opacity = '1';
+            }, 10);
+        }
+
+        function hideAddFoodModal() {
+            const modal = document.getElementById('addFoodModal');
+            const content = modal.querySelector('.modal-content');
+            
+            // Reverse animation
+            content.style.transform = 'translateY(4px)';
+            content.style.opacity = '0';
+            modal.classList.remove('active');
+            
+            // Wait for animation to finish
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.getElementById('addFoodForm').reset();
+            }, 300);
+        }
+
+        function addFoodItem(event) {
+            event.preventDefault();
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            addLoadingState(submitButton, true);
+
+            try {
+                const foodData = {
+                    name: document.getElementById('foodName').value,
+                    calories: parseInt(document.getElementById('foodCalories').value),
+                    protein: parseInt(document.getElementById('foodProtein').value) || 0,
+                    servingSize: document.getElementById('servingSize').value,
+                    category: document.getElementById('foodCategory').value,
+                    notes: document.getElementById('foodNotes').value,
+                    timestamp: new Date().toISOString(),
+                    id: Date.now().toString()
+                };
+
+                const foodLog = getStoredData('foodLog');
+                foodLog.push(foodData);
+                setStoredData('foodLog', foodLog);
+
+                hideAddFoodModal();
+                loadFoodLog();
+                updateNutritionProgress();
+                showToast(`Added ${foodData.name} to your food log`);
+            } catch (error) {
+                showToast('Failed to add food item', 'error');
+                console.error('Error adding food item:', error);
+            } finally {
+                addLoadingState(submitButton, false);
+            }
+        }
+
+        function deleteFoodItem(id) {
+            const foodLog = getStoredData('foodLog');
+            const updatedLog = foodLog.filter(item => item.id !== id);
+            setStoredData('foodLog', updatedLog);
+            loadFoodLog();
+            updateNutritionProgress();
+        }
+
+        function loadFoodLog() {
+            const foodLog = getStoredData('foodLog');
+            const today = new Date().toDateString();
+            const todayItems = foodLog.filter(item => new Date(item.timestamp).toDateString() === today);
+
+            // Clear all sections
+            ['breakfast', 'lunch', 'dinner', 'snack'].forEach(category => {
+                document.getElementById(`${category}Items`).innerHTML = '';
+                document.getElementById(`${category}Calories`).textContent = '0 cal';
+            });
+
+            // Group items by category
+            const itemsByCategory = todayItems.reduce((acc, item) => {
+                if (!acc[item.category]) acc[item.category] = [];
+                acc[item.category].push(item);
+                return acc;
+            }, {});
+
+            // Populate sections
+            for (const [category, items] of Object.entries(itemsByCategory)) {
+                const container = document.getElementById(`${category}Items`);
+                const totalCalories = items.reduce((sum, item) => sum + item.calories, 0);
+                document.getElementById(`${category}Calories`).textContent = `${totalCalories} cal`;
+
+                items.forEach(item => {
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-gray-50">
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                                <div class="text-xs text-gray-500">
+                                    ${item.calories} cal ${item.servingSize ? `• ${item.servingSize}` : ''}
+                                    ${item.protein ? `• ${item.protein}g protein` : ''}
+                                </div>
+                            </div>
+                            <button onclick="deleteFoodItem('${item.id}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            updateNutritionProgress();
+        }
+
+        function updateNutritionProgress() {
+            const foodLog = getStoredData('foodLog');
+            const today = new Date().toDateString();
+            const todayItems = foodLog.filter(item => new Date(item.timestamp).toDateString() === today);
+
+            const totalCalories = todayItems.reduce((sum, item) => sum + item.calories, 0);
+            const totalProtein = todayItems.reduce((sum, item) => sum + (item.protein || 0), 0);
+            const waterLog = getStoredData('waterLog', { amount: 0, lastUpdated: null });
+
+            // Update progress bars and text
+            const calorieGoal = 2000;
+            const proteinGoal = 60;
+            const waterGoal = 2000;
+
+            document.getElementById('calorieProgress').textContent = `${totalCalories}/${calorieGoal}`;
+            document.getElementById('calorieProgressBar').style.width = `${Math.min(100, (totalCalories/calorieGoal) * 100)}%`;
+
+            document.getElementById('proteinProgress').textContent = `${totalProtein}/${proteinGoal}g`;
+            document.getElementById('proteinProgressBar').style.width = `${Math.min(100, (totalProtein/proteinGoal) * 100)}%`;
+
+            document.getElementById('waterProgress').textContent = `${waterLog.amount}/${waterGoal}ml`;
+            document.getElementById('waterProgressBar').style.width = `${Math.min(100, (waterLog.amount/waterGoal) * 100)}%`;
+        }
+
+        function addWater(amount, button) {
+            const waterLog = getStoredData('waterLog', { amount: 0, lastUpdated: null });
+            const today = new Date().toDateString();
+
+            // Add loading state
+            addLoadingState(button, true);
+
+            try {
+                // Reset water intake if it's a new day
+                if (waterLog.lastUpdated !== today) {
+                    waterLog.amount = 0;
+                }
+
+                waterLog.amount += amount;
+                waterLog.lastUpdated = today;
+                setStoredData('waterLog', waterLog);
+                updateNutritionProgress();
+                showToast(`Added ${amount}ml of water`);
+
+                // Animate the progress bar
+                const progressBar = document.getElementById('waterProgressBar');
+                progressBar.style.transition = 'width 0.5s ease-in-out';
+                setTimeout(() => progressBar.style.transition = '', 500);
+            } catch (error) {
+                showToast('Failed to update water intake', 'error');
+                console.error('Error updating water intake:', error);
+            } finally {
+                addLoadingState(button, false);
+            }
+        }
+
+        // Books functions
+        function showAddBookModal() {
+            const modal = document.getElementById('addBookModal');
+            const content = modal.querySelector('.modal-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Trigger animation
+            setTimeout(() => {
+                modal.classList.add('active');
+                content.classList.add('active');
+                content.style.transform = 'translateY(0)';
+                content.style.opacity = '1';
+            }, 10);
+        }
+
+        function hideAddBookModal() {
+            const modal = document.getElementById('addBookModal');
+            const content = modal.querySelector('.modal-content');
+            
+            // Reverse animation
+            content.style.transform = 'translateY(4px)';
+            content.style.opacity = '0';
+            modal.classList.remove('active');
+            
+            // Wait for animation to finish
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.getElementById('addBookForm').reset();
+            }, 300);
+        }
+
+        function addBook(event) {
+            event.preventDefault();
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            addLoadingState(submitButton, true);
+
+            try {
+                const bookData = {
+                    title: document.getElementById('bookTitle').value,
+                    author: document.getElementById('bookAuthor').value,
+                    status: document.getElementById('bookStatus').value,
+                    id: Date.now().toString(),
+                    addedAt: new Date().toISOString()
+                };
+
+                const books = getStoredData('books');
+                books.push(bookData);
+                setStoredData('books', books);
+
+                hideAddBookModal();
+                loadBooks();
+                showToast(`Added "${bookData.title}" to your reading list`);
+            } catch (error) {
+                showToast('Failed to add book', 'error');
+                console.error('Error adding book:', error);
+            } finally {
+                addLoadingState(submitButton, false);
+            }
+        }
+
+        function deleteBook(id) {
+            const books = getStoredData('books');
+            const updatedBooks = books.filter(book => book.id !== id);
+            setStoredData('books', updatedBooks);
+            loadBooks();
+        }
+
+        function loadBooks() {
+            const books = getStoredData('books');
+            const container = document.getElementById('booksList');
+            container.innerHTML = '';
+
+            books.forEach(book => {
+                const statusColors = {
+                    reading: 'bg-blue-100 text-blue-800',
+                    completed: 'bg-green-100 text-green-800',
+                    wishlist: 'bg-yellow-100 text-yellow-800'
+                };
+
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900">${book.title}</div>
+                            <div class="text-sm text-gray-500">${book.author}</div>
+                            <span class="inline-block px-2 py-1 text-xs rounded-full ${statusColors[book.status]}">
+                                ${book.status.charAt(0).toUpperCase() + book.status.slice(1)}
+                            </span>
+                        </div>
+                        <button onclick="deleteBook('${book.id}')" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Goals functions
+        function showAddGoalModal() {
+            const modal = document.getElementById('addGoalModal');
+            const content = modal.querySelector('.modal-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Trigger animation
+            setTimeout(() => {
+                modal.classList.add('active');
+                content.classList.add('active');
+                content.style.transform = 'translateY(0)';
+                content.style.opacity = '1';
+            }, 10);
+        }
+
+        function hideAddGoalModal() {
+            const modal = document.getElementById('addGoalModal');
+            const content = modal.querySelector('.modal-content');
+            
+            // Reverse animation
+            content.style.transform = 'translateY(4px)';
+            content.style.opacity = '0';
+            modal.classList.remove('active');
+            
+            // Wait for animation to finish
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.getElementById('addGoalForm').reset();
+            }, 300);
+        }
+
+        function addGoal(event) {
+            event.preventDefault();
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            addLoadingState(submitButton, true);
+
+            try {
+                const goalData = {
+                    title: document.getElementById('goalTitle').value,
+                    targetDate: document.getElementById('goalTargetDate').value,
+                    category: document.getElementById('goalCategory').value,
+                    completed: false,
+                    id: Date.now().toString(),
+                    createdAt: new Date().toISOString(),
+                    progress: 0
+                };
+
+                const goals = getStoredData('goals');
+                goals.push(goalData);
+                setStoredData('goals', goals);
+
+                hideAddGoalModal();
+                loadGoals();
+                showToast(`Added new ${goalData.category} goal`);
+            } catch (error) {
+                showToast('Failed to add goal', 'error');
+                console.error('Error adding goal:', error);
+            } finally {
+                addLoadingState(submitButton, false);
+            }
+        }
+
+        function toggleGoalStatus(id) {
+            const goals = getStoredData('goals');
+            const updatedGoals = goals.map(goal => {
+                if (goal.id === id) {
+                    goal.completed = !goal.completed;
+                }
+                return goal;
+            });
+            setStoredData('goals', updatedGoals);
+            loadGoals();
+        }
+
+        function deleteGoal(id) {
+            const goals = getStoredData('goals');
+            const updatedGoals = goals.filter(goal => goal.id !== id);
+            setStoredData('goals', updatedGoals);
+            loadGoals();
+        }
+
+        function loadGoals() {
+            const goals = getStoredData('goals');
+            const container = document.getElementById('goalsList');
+            container.innerHTML = '';
+
+            goals.forEach(goal => {
+                const categoryIcons = {
+                    personal: '👤',
+                    career: '💼',
+                    health: '❤️',
+                    education: '📚'
+                };
+
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg ${goal.completed ? 'opacity-75' : ''}">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" ${goal.completed ? 'checked' : ''}
+                                       onchange="toggleGoalStatus('${goal.id}')"
+                                       class="rounded text-primary-600 focus:ring-primary-500">
+                                <div>
+                                    <div class="font-medium text-gray-900 ${goal.completed ? 'line-through' : ''}">
+                                        ${goal.title}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        ${categoryIcons[goal.category]} ${goal.category.charAt(0).toUpperCase() + goal.category.slice(1)}
+                                        • Due: ${formatDate(goal.targetDate)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteGoal('${goal.id}')" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Journal entries functions
+        function loadJournalEntries() {
+            const entries = getStoredData('journalEntries');
+            applyFilters(entries);
+            updateEntriesCount(entries.length);
+        }
+
+        function filterEntries(timeframe) {
+            if (timeframe === 'custom') {
+                showCustomDateRangeModal();
+                return;
+            }
+
+            // Update filter buttons
+            const buttons = document.querySelectorAll('[onclick^="filterEntries"]');
+            buttons.forEach(button => {
+                const buttonTimeframe = button.getAttribute('onclick').match(/'([^']+)'/)[1];
+                if (buttonTimeframe === timeframe) {
+                    button.classList.remove('bg-gray-200', 'text-gray-700');
+                    button.classList.add('bg-primary-600', 'text-white');
+                } else {
+                    button.classList.remove('bg-primary-600', 'text-white');
+                    button.classList.add('bg-gray-200', 'text-gray-700');
+                }
+            });
+
+            const entries = getStoredData('journalEntries');
+            const now = new Date();
+            let filteredEntries = [];
+
+            switch(timeframe) {
+                case 'today':
+                    filteredEntries = entries.filter(entry => {
+                        const entryDate = new Date(entry.date);
+                        return entryDate.toDateString() === now.toDateString();
+                    });
+                    break;
+                case 'week':
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    filteredEntries = entries.filter(entry => {
+                        const entryDate = new Date(entry.date);
+                        return entryDate >= weekAgo;
+                    });
+                    break;
+                case 'month':
+                    const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                    filteredEntries = entries.filter(entry => {
+                        const entryDate = new Date(entry.date);
+                        return entryDate >= monthAgo;
+                    });
+                    break;
+                default:
+                    filteredEntries = entries;
+            }
+
+            applyFilters(filteredEntries);
+        }
+
+        function applyFilters(baseEntries = null) {
+            const entries = baseEntries || getStoredData('journalEntries');
+            let filteredEntries = [...entries];
+
+            // Apply mood filter
+            const selectedMood = document.getElementById('moodFilter').value;
+            if (selectedMood !== 'all') {
+                filteredEntries = filteredEntries.filter(entry => entry.mood === selectedMood);
+            }
+
+            // Apply energy level filter
+            const selectedEnergy = document.getElementById('energyFilter').value;
+            if (selectedEnergy !== 'all') {
+                filteredEntries = filteredEntries.filter(entry => {
+                    const energy = parseInt(entry.energyLevel);
+                    switch(selectedEnergy) {
+                        case 'high': return energy >= 8;
+                        case 'medium': return energy >= 4 && energy <= 7;
+                        case 'low': return energy <= 3;
+                        default: return true;
+                    }
+                });
+            }
+
+            // Apply activity filter
+            const selectedActivity = document.getElementById('activityFilter').value;
+            if (selectedActivity !== 'all') {
+                filteredEntries = filteredEntries.filter(entry => 
+                    entry.activities && entry.activities.includes(selectedActivity)
+                );
+            }
+
+            // Apply search filter
+            const searchQuery = document.getElementById('searchEntries').value.toLowerCase();
+            if (searchQuery) {
+                filteredEntries = filteredEntries.filter(entry =>
+                    entry.title?.toLowerCase().includes(searchQuery) ||
+                    entry.content?.toLowerCase().includes(searchQuery) ||
+                    entry.gratitude?.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            displayJournalEntries(filteredEntries);
+            updateEntriesCount(filteredEntries.length);
+        }
+
+        function displayJournalEntries(entries) {
+            const container = document.getElementById('journalEntries');
+            const noEntriesMessage = document.getElementById('noEntriesMessage');
+            
+            // Sort entries by date (newest first)
+            entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (entries.length === 0) {
+                container.innerHTML = '';
+                noEntriesMessage.classList.remove('hidden');
+                return;
+            }
+
+            noEntriesMessage.classList.add('hidden');
+            container.innerHTML = '';
+
+            entries.forEach(entry => {
+                const entryElement = document.createElement('div');
+                entryElement.className = 'bg-gray-50 hover:bg-gray-100 rounded-lg p-4 transition-all hover-card';
+                
+                // Format the activities if they exist
+                const activitiesList = entry.activities && entry.activities.length ? 
+                    `<div class="flex flex-wrap gap-2 mt-3">
+                        ${entry.activities.map(activity => 
+                            `<span class="px-2 py-1 bg-primary-100 text-primary-700 rounded-full text-xs capitalize">
+                                ${activity}
+                             </span>`
+                        ).join('')}
+                    </div>` : '';
+
+                entryElement.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-2xl">${entry.mood}</span>
+                                <h3 class="font-medium text-lg">${entry.title || 'Untitled Entry'}</h3>
+                            </div>
+                            <div class="text-sm text-gray-500 flex items-center gap-2">
+                                <i class="fas fa-clock"></i>
+                                ${formatTimeAgo(entry.date)}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="editJournalEntry('${entry.id}')" 
+                                    class="text-gray-400 hover:text-gray-600 transition-colors"
+                                    data-tooltip="Edit Entry">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteJournalEntry('${entry.id}')" 
+                                    class="text-gray-400 hover:text-red-500 transition-colors"
+                                    data-tooltip="Delete Entry">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    ${entry.content ? `<p class="text-gray-600 mb-3 line-clamp-3">${entry.content}</p>` : ''}
+                    
+                    ${entry.gratitude ? `
+                        <div class="bg-primary-50 rounded-lg p-3 mb-3">
+                            <div class="text-sm font-medium text-primary-700 mb-1">Grateful for:</div>
+                            <p class="text-gray-600">${entry.gratitude}</p>
+                        </div>
+                    ` : ''}
+
+                    <div class="flex flex-wrap gap-4 items-center text-sm">
+                        <div class="flex items-center gap-2">
+                            <div class="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-primary-500" style="width: ${entry.energyLevel * 10}%"></div>
+                            </div>
+                            <span class="text-gray-500">Energy ${entry.energyLevel}/10</span>
+                        </div>
+                    </div>
+                    ${activitiesList}
+                `;
+
+                container.appendChild(entryElement);
+            });
+
+            // Initialize tooltips for the new entries
+            initializeTooltips();
+        }
+
+        function calculateStreak() {
+            const entries = getStoredData('journalEntries');
+            if (!entries.length) return 0;
+            
+            // Sort entries by date, newest first
+            entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let streak = 0;
+            let currentDate = new Date(today);
+            
+            // Check if there's an entry for today
+            const hasEntryToday = entries.some(entry => {
+                const entryDate = new Date(entry.timestamp);
+                return entryDate.toDateString() === today.toDateString();
+            });
+            
+            if (!hasEntryToday) {
+                // If no entry today, check if there was one yesterday to continue the streak
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const hasEntryYesterday = entries.some(entry => {
+                    const entryDate = new Date(entry.timestamp);
+                    return entryDate.toDateString() === yesterday.toDateString();
+                });
+                
+                if (!hasEntryYesterday) return 0; // Streak broken
+                currentDate = yesterday; // Start counting from yesterday
+            }
+            
+            // Count consecutive days
+            while (true) {
+                const hasEntry = entries.some(entry => {
+                    const entryDate = new Date(entry.timestamp);
+                    return entryDate.toDateString() === currentDate.toDateString();
+                });
+                
+                if (!hasEntry) break;
+                streak++;
+                currentDate.setDate(currentDate.getDate() - 1);
+            }
+            
+            return streak;
+        }
+
+        function updateStats() {
+            const entries = getStoredData('journalEntries');
+            const totalEntries = entries.length;
+            const streak = calculateStreak();
+            
+            // Update total entries
+            const totalEntriesElement = document.getElementById('totalEntries');
+            if (totalEntriesElement) {
+                totalEntriesElement.textContent = totalEntries;
+            }
+            
+            // Update streak
+            const streakElement = document.getElementById('dayStreak');
+            if (streakElement) {
+                streakElement.textContent = streak;
+            }
+            
+            // Update entries count in the main section
+            const countElement = document.getElementById('entriesCount');
+            if (countElement) {
+                countElement.textContent = `${totalEntries} ${totalEntries === 1 ? 'entry' : 'entries'}`;
+            }
+        }
+
+        function updateEntriesCount(count) {
+            updateStats(); // Call our new comprehensive stats update function
+        }es'} found`;
+        }
+
+        function showCustomDateRangeModal() {
+            showToast('Coming soon: Custom date range filter', 'info');
+        }
+
+        function editJournalEntry(id) {
+            const entries = getStoredData('journalEntries');
+            const entry = entries.find(e => e.id === id);
+            if (!entry) return;
+
+            showModal('Edit Journal Entry', `
+                <form id="editJournalForm" onsubmit="saveJournalEdit(event, '${id}')" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input type="text" name="title" value="${entry.title || ''}" 
+                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mood</label>
+                            <select name="mood" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <option value="😊" ${entry.mood === '😊' ? 'selected' : ''}>😊 Happy</option>
+                                <option value="😐" ${entry.mood === '😐' ? 'selected' : ''}>😐 Neutral</option>
+                                <option value="😔" ${entry.mood === '😔' ? 'selected' : ''}>😔 Sad</option>
+                                <option value="😡" ${entry.mood === '😡' ? 'selected' : ''}>😡 Angry</option>
+                                <option value="😴" ${entry.mood === '😴' ? 'selected' : ''}>😴 Tired</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Energy Level (1-10)</label>
+                            <input type="number" name="energyLevel" value="${entry.energyLevel}" min="1" max="10"
+                                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                        <textarea name="content" rows="4" 
+                                  class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">${entry.content || ''}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Grateful for</label>
+                        <textarea name="gratitude" rows="2" 
+                                  class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">${entry.gratitude || ''}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Activities</label>
+                        <div class="flex flex-wrap gap-2">
+                            ${['exercise', 'meditation', 'reading', 'work', 'social'].map(activity => `
+                                <label class="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+                                    <input type="checkbox" name="activities" value="${activity}" 
+                                           ${entry.activities?.includes(activity) ? 'checked' : ''}
+                                           class="rounded text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm capitalize">${activity}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" onclick="hideModal()" 
+                                class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function saveJournalEdit(event, id) {
+            event.preventDefault();
+            const form = event.target;
+            const entries = getStoredData('journalEntries');
+            const entryIndex = entries.findIndex(e => e.id === id);
+            
+            if (entryIndex === -1) return;
+
+            // Get selected activities
+            const activities = [];
+            form.querySelectorAll('input[name="activities"]:checked').forEach(checkbox => {
+                activities.push(checkbox.value);
+            });
+
+            // Update entry
+            entries[entryIndex] = {
+                ...entries[entryIndex],
+                title: form.title.value,
+                mood: form.mood.value,
+                energyLevel: parseInt(form.energyLevel.value),
+                content: form.content.value,
+                gratitude: form.gratitude.value,
+                activities,
+                lastModified: new Date().toISOString()
+            };
+
+            setStoredData('journalEntries', entries);
+            hideModal();
+            showToast('Journal entry updated successfully');
+            loadJournalEntries();
+        }
+
+        function deleteJournalEntry(id) {
+            showModal('Delete Journal Entry', `
+                <div class="text-center">
+                    <div class="text-red-500 mb-4">
+                        <i class="fas fa-exclamation-triangle text-4xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Are you sure?</h3>
+                    <p class="text-gray-500 mb-6">This action cannot be undone.</p>
+                    <div class="flex justify-center gap-3">
+                        <button onclick="hideModal()" 
+                                class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors">
+                            Cancel
+                        </button>
+                        <button onclick="confirmDeleteJournalEntry('${id}')" 
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            Delete Entry
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function confirmDeleteJournalEntry(id) {
+            const entries = getStoredData('journalEntries');
+            const updatedEntries = entries.filter(entry => entry.id !== id);
+            setStoredData('journalEntries', updatedEntries);
+            hideModal();
+            showToast('Journal entry deleted successfully');
+            loadJournalEntries();
+        }
+
+        // Initialize everything
+        initializeDashboard();
+        loadJournalEntries('all');
+        loadBooks();
+        loadGoals();
+        loadFoodLog();
+    </script>
+</body>
+</html>

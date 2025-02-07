@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychologist Dashboard - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-primary-600 text-2xl font-bold">MindJournal</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300 px-3">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="ml-3 relative">
+                        <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                            <i class="fas fa-user-md text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Welcome back, Dr. <span class="text-primary-600">Thompson</span></h1>
+            <p class="text-gray-600 mt-2">You have 3 new journal entries to review</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <button class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-left">
+                <i class="fas fa-calendar-check text-primary-600 text-2xl mb-4"></i>
+                <h3 class="font-bold text-gray-900">Today's Sessions</h3>
+                <p class="text-gray-600 text-sm mt-2">View your schedule</p>
+            </button>
+            <button class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-left">
+                <i class="fas fa-comments text-primary-600 text-2xl mb-4"></i>
+                <h3 class="font-bold text-gray-900">Client Messages</h3>
+                <p class="text-gray-600 text-sm mt-2">3 unread messages</p>
+            </button>
+            <button class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 text-left">
+                <i class="fas fa-clipboard-list text-primary-600 text-2xl mb-4"></i>
+                <h3 class="font-bold text-gray-900">Journal Reviews</h3>
+                <p class="text-gray-600 text-sm mt-2">Review client entries</p>
+            </button>
+        </div>
+
+        <!-- Client List -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Your Clients</h2>
+            <div class="space-y-4">
+                <div class="border-b border-gray-200 pb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center mr-3">
+                                <span class="text-primary-600 font-medium">SJ</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Sarah Johnson</h3>
+                                <p class="text-gray-600 text-sm">Last entry: 2 hours ago</p>
+                            </div>
+                        </div>
+                        <button class="text-primary-600 hover:text-primary-700">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="border-b border-gray-200 pb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center mr-3">
+                                <span class="text-primary-600 font-medium">MB</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Michael Brown</h3>
+                                <p class="text-gray-600 text-sm">Last entry: Yesterday</p>
+                            </div>
+                        </div>
+                        <button class="text-primary-600 hover:text-primary-700">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="pb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center mr-3">
+                                <span class="text-primary-600 font-medium">EW</span>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Emma Wilson</h3>
+                                <p class="text-gray-600 text-sm">Last entry: 3 days ago</p>
+                            </div>
+                        </div>
+                        <button class="text-primary-600 hover:text-primary-700">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button class="mt-4 text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors duration-300">
+                View All Clients <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Upcoming Sessions</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-primary-50 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-video text-primary-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-900">Sarah Johnson</h3>
+                            <p class="text-gray-600 text-sm">Video Session - 2:00 PM</p>
+                        </div>
+                    </div>
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-300">
+                        Join
+                    </button>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-phone text-gray-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-900">Michael Brown</h3>
+                            <p class="text-gray-600 text-sm">Phone Session - 3:30 PM</p>
+                        </div>
+                    </div>
+                    <button class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-300">
+                        Remind
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

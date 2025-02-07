@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Dashboard - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-primary-600 text-2xl font-bold">MindJournal</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300 px-3">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="ml-3 relative">
+                        <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Left Sidebar -->
+            <div class="col-span-3 space-y-8">
+                <!-- Personal Library -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">Personal Library</h2>
+                        <button onclick="showAddBookModal()" class="text-primary-600 hover:text-primary-700">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="booksList" class="space-y-4">
+                        <!-- Books will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Goals & Aspirations -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">Goals & Aspirations</h2>
+                        <button onclick="showAddGoalModal()" class="text-primary-600 hover:text-primary-700">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="goalsList" class="space-y-4">
+                        <!-- Goals will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-span-6">
+                <!-- Welcome Section -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <div id="welcomeHeader">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            <div id="userStats" class="mt-4 text-sm text-gray-600">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+                <!-- Journal Entries Section -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">Journal Entries</h2>
+                <a href="new-journal-entry.html" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-300">
+                    <i class="fas fa-plus mr-2"></i>New Entry
+                </a>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex gap-2 mb-6">
+                <button onclick="filterEntries('all')" class="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-300">All</button>
+                <button onclick="filterEntries('today')" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-300">Today</button>
+                <button onclick="filterEntries('week')" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-300">This Week</button>
+                <button onclick="filterEntries('month')" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors duration-300">This Month</button>
+            </div>
+
+            <!-- Journal Entries Container -->
+            <div id="journalEntries" class="space-y-6">
+                <!-- Entries will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Function to get mood icon and color
+        function getMoodIcon(mood) {
+            const moodData = {
+                'great': { icon: '😄', color: 'text-green-500' },
+                'good': { icon: '🙂', color: 'text-blue-500' },
+                'okay': { icon: '😐', color: 'text-yellow-500' },
+                'down': { icon: '😔', color: 'text-orange-500' },
+                'rough': { icon: '😢', color: 'text-red-500' }
+            };
+            return moodData[mood]?.icon || '😶';
+        }
+
+        // Initialize dashboard with user data
+        function initializeDashboard() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'user-login.html';
+                return;
+            }
+
+            // Set welcome message and stats
+            document.getElementById('welcomeHeader').innerHTML = `
+                <h1 class="text-2xl font-bold text-gray-900">Welcome back, <span class="text-primary-600">${currentUser.name || currentUser.username}</span>!</h1>
+                <p class="text-gray-600 mt-2">How are you feeling today?</p>
+            `;
+
+            const stats = currentUser.journalStats || {};
+            document.getElementById('userStats').innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-900">Total Entries</h3>
+                        <p class="text-2xl font-bold text-primary-600">${stats.totalEntries || 0}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-900">Shared with Psychologist</h3>
+                        <p class="text-2xl font-bold text-primary-600">${stats.sharedEntries || 0}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-900">Last Entry</h3>
+                        <p class="text-sm text-gray-600">${stats.lastEntryDate ? new Date(stats.lastEntryDate).toLocaleDateString() : 'No entries yet'}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-semibold text-gray-900">Streak</h3>
+                        <p class="text-2xl font-bold text-primary-600">${stats.streak || 0} days</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load and display journal entries
+        function loadJournalEntries(filter = 'all') {
+            const entriesContainer = document.getElementById('journalEntries');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'user-login.html';
+                return;
+            }
+
+            const allEntries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+            let userEntries = allEntries.filter(entry => entry.userId === currentUser.id);
+            
+            // Apply date filter
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const weekAgo = new Date(today);
+            weekAgo.setDate(today.getDate() - 7);
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(today.getMonth() - 1);
+
+            switch(filter) {
+                case 'today':
+                    userEntries = userEntries.filter(entry => new Date(entry.dateTime) >= today);
+                    break;
+                case 'week':
+                    userEntries = userEntries.filter(entry => new Date(entry.dateTime) >= weekAgo);
+                    break;
+                case 'month':
+                    userEntries = userEntries.filter(entry => new Date(entry.dateTime) >= monthAgo);
+                    break;
+            }
+
+            // Update filter button styles
+            document.querySelectorAll('[onclick^="filterEntries"]').forEach(button => {
+                const buttonFilter = button.getAttribute('onclick').match(/'(.*?)'/)[1];
+                if (buttonFilter === filter) {
+                    button.classList.remove('bg-gray-200', 'text-gray-700');
+                    button.classList.add('bg-primary-600', 'text-white');
+                } else {
+                    button.classList.remove('bg-primary-600', 'text-white');
+                    button.classList.add('bg-gray-200', 'text-gray-700');
+                }
+            });
+            
+            if (userEntries.length === 0) {
+                entriesContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-book-open text-4xl mb-4"></i>
+                        <p>No journal entries found for the selected time period.</p>
+                        <a href="new-journal-entry.html" class="mt-4 inline-block px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">Create New Entry</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort entries by date, newest first
+            userEntries.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+
+            // Display entries
+            entriesContainer.innerHTML = userEntries.map(entry => {
+                const entryDate = new Date(entry.dateTime);
+                const formattedDate = entryDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                });
+                const formattedTime = entryDate.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+
+                return `
+                    <div class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow duration-200 relative group">
+                        <!-- Delete Button -->
+                        <button onclick="deleteEntry('${entry.id}')" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl" role="img" aria-label="Mood ${entry.mood}">${getMoodIcon(entry.mood)}</span>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">${formattedDate}</h3>
+                                        <p class="text-sm text-gray-600">${formattedTime}</p>
+                                    </div>
+                                </div>
+                                ${entry.location && entry.weather ? `
+                                    <p class="text-sm text-gray-600 mt-2">
+                                        <i class="fas fa-map-marker-alt mr-1"></i> ${entry.location}
+                                        <span class="mx-2">·</span>
+                                        <i class="fas fa-cloud mr-1"></i> ${entry.weather}
+                                    </p>
+                                ` : ''}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                                    <i class="fas fa-battery-three-quarters mr-1"></i> Energy: ${entry.energyLevel}/10
+                                </span>
+                                ${entry.shareWithPsychologist ? `
+                                    <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                                        <i class="fas fa-user-md mr-1"></i> Shared
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="prose prose-sm max-w-none">
+                            <p class="text-gray-800 whitespace-pre-wrap mb-4">${entry.journalContent}</p>
+                        </div>
+
+                        ${entry.gratitude ? `
+                            <div class="mt-4 bg-yellow-50 p-4 rounded-lg">
+                                <h4 class="text-sm font-semibold text-yellow-800 mb-2">
+                                    <i class="fas fa-heart mr-2"></i>Gratitude
+                                </h4>
+                                <p class="text-gray-800 italic">${entry.gratitude}</p>
+                            </div>
+                        ` : ''}
+
+                        ${entry.activities && entry.activities.length > 0 ? `
+                            <div class="mt-4">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-running mr-2"></i>Activities
+                                </h4>
+                                <div class="flex flex-wrap gap-2">
+                                    ${entry.activities.map(activity => `
+                                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">${activity}</span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${entry.tags && entry.tags.length > 0 ? `
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                ${entry.tags.map(tag => `
+                                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                                        <i class="fas fa-tag mr-1"></i>${tag}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${entry.attachments && entry.attachments.length > 0 ? `
+                            <div class="mt-4 border-t pt-4">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-paperclip mr-2"></i>Attachments
+                                </h4>
+                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    ${entry.attachments.map(attachment => `
+                                        <div class="relative group cursor-pointer" onclick="viewAttachment('${attachment.data}', '${attachment.type}', '${attachment.name}')">
+                                            ${attachment.type.startsWith('image/') ? `
+                                                <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100">
+                                                    <img src="${attachment.data}" alt="${attachment.name}" class="object-cover w-full h-full">
+                                                </div>
+                                            ` : `
+                                                <div class="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                                                    <i class="fas ${getFileIcon(attachment.type)} text-3xl text-gray-400"></i>
+                                                </div>
+                                            `}
+                                            <div class="mt-2 text-xs text-gray-600 truncate">${attachment.name}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterEntries(filter) {
+            loadJournalEntries(filter);
+        }
+
+        function deleteEntry(entryId) {
+            if (confirm('Are you sure you want to delete this journal entry? This action cannot be undone.')) {
+                const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+                const index = entries.findIndex(entry => entry.id === entryId);
+                
+                if (index !== -1) {
+                    // Update user stats
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    if (currentUser && currentUser.journalStats) {
+                        currentUser.journalStats.totalEntries--;
+                        if (entries[index].shareWithPsychologist) {
+                            currentUser.journalStats.sharedEntries--;
+                        }
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    }
+
+                    // Remove entry
+                    entries.splice(index, 1);
+                    localStorage.setItem('journalEntries', JSON.stringify(entries));
+
+                    // Refresh the display
+                    loadJournalEntries('all');
+                    initializeDashboard(); // Update stats
+                }
+            }
+        }
+
+        function getFileIcon(fileType) {
+            if (fileType.startsWith('image/')) return 'fa-image';
+            if (fileType === 'application/pdf') return 'fa-file-pdf';
+            if (fileType.includes('word')) return 'fa-file-word';
+            return 'fa-file';
+        }
+
+        function viewAttachment(data, type, name) {
+            if (type.startsWith('image/')) {
+                // Create a modal to view the image
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.onclick = () => modal.remove();
+                
+                const img = document.createElement('img');
+                img.src = data;
+                img.className = 'max-w-[90%] max-h-[90vh] object-contain';
+                img.onclick = e => e.stopPropagation();
+                
+                modal.appendChild(img);
+                document.body.appendChild(modal);
+            } else {
+                // For other file types, open in a new tab or download
+                const link = document.createElement('a');
+                link.href = data;
+                link.download = name;
+                link.click();
+            }
+        }
+
+        // Books functionality
+        function showAddBookModal() {
+            document.getElementById('addBookModal').style.display = 'flex';
+        }
+
+        function hideAddBookModal() {
+            document.getElementById('addBookModal').style.display = 'none';
+        }
+
+        function addBook(event) {
+            event.preventDefault();
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const book = {
+                id: 'book_' + Date.now(),
+                title: document.getElementById('bookTitle').value,
+                author: document.getElementById('bookAuthor').value,
+                status: document.getElementById('bookStatus').value,
+                addedDate: new Date().toISOString(),
+                userId: currentUser.id
+            };
+
+            const books = JSON.parse(localStorage.getItem('books') || '[]');
+            books.push(book);
+            localStorage.setItem('books', JSON.stringify(books));
+
+            hideAddBookModal();
+            document.getElementById('addBookForm').reset();
+            loadBooks();
+        }
+
+        function loadBooks() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const books = JSON.parse(localStorage.getItem('books') || '[]');
+            const userBooks = books.filter(book => book.userId === currentUser.id);
+            const booksList = document.getElementById('booksList');
+
+            booksList.innerHTML = userBooks.map(book => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <h3 class="font-medium text-gray-900">${book.title}</h3>
+                        <p class="text-sm text-gray-600">${book.author}</p>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full ${getStatusColor(book.status)}">
+                        ${formatStatus(book.status)}
+                    </span>
+                </div>
+            `).join('') || '<p class="text-gray-500 text-center">No books added yet</p>';
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                reading: 'bg-blue-100 text-blue-800',
+                completed: 'bg-green-100 text-green-800',
+                wishlist: 'bg-purple-100 text-purple-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function formatStatus(status) {
+            const formats = {
+                reading: 'Reading',
+                completed: 'Completed',
+                wishlist: 'Want to Read'
+            };
+            return formats[status] || status;
+        }
+
+        // Goals functionality
+        function showAddGoalModal() {
+            document.getElementById('addGoalModal').style.display = 'flex';
+        }
+
+        function hideAddGoalModal() {
+            document.getElementById('addGoalModal').style.display = 'none';
+        }
+
+        function addGoal(event) {
+            event.preventDefault();
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const goal = {
+                id: 'goal_' + Date.now(),
+                title: document.getElementById('goalTitle').value,
+                targetDate: document.getElementById('goalTargetDate').value,
+                category: document.getElementById('goalCategory').value,
+                completed: false,
+                createdAt: new Date().toISOString(),
+                userId: currentUser.id
+            };
+
+            const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            goals.push(goal);
+            localStorage.setItem('goals', JSON.stringify(goals));
+
+            hideAddGoalModal();
+            document.getElementById('addGoalForm').reset();
+            loadGoals();
+        }
+
+        function toggleGoalCompletion(goalId) {
+            const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            const goalIndex = goals.findIndex(g => g.id === goalId);
+            if (goalIndex !== -1) {
+                goals[goalIndex].completed = !goals[goalIndex].completed;
+                localStorage.setItem('goals', JSON.stringify(goals));
+                loadGoals();
+            }
+        }
+
+        function loadGoals() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            const userGoals = goals.filter(goal => goal.userId === currentUser.id);
+            const goalsList = document.getElementById('goalsList');
+
+            goalsList.innerHTML = userGoals.map(goal => `
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" ${goal.completed ? 'checked' : ''} 
+                                   onchange="toggleGoalCompletion('${goal.id}')"
+                                   class="h-4 w-4 text-primary-600 rounded">
+                            <h3 class="font-medium text-gray-900 ${goal.completed ? 'line-through' : ''}">${goal.title}</h3>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded-full bg-${goal.category}-100 text-${goal.category}-800">
+                            ${goal.category}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600">Target: ${new Date(goal.targetDate).toLocaleDateString()}</p>
+                </div>
+            `).join('') || '<p class="text-gray-500 text-center">No goals added yet</p>';
+        }
+
+        // Food tracker functionality
+        function showAddFoodModal() {
+            document.getElementById('addFoodModal').style.display = 'flex';
+        }
+
+        function hideAddFoodModal() {
+            document.getElementById('addFoodModal').style.display = 'none';
+        }
+
+        function addFoodItem(event) {
+            event.preventDefault();
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const foodItem = {
+                id: 'food_' + Date.now(),
+                name: document.getElementById('foodName').value,
+                calories: parseInt(document.getElementById('foodCalories').value),
+                protein: parseInt(document.getElementById('foodProtein').value) || 0,
+                category: document.getElementById('foodCategory').value,
+                timestamp: new Date().toISOString(),
+                userId: currentUser.id
+            };
+
+            const foodLog = JSON.parse(localStorage.getItem('foodLog') || '[]');
+            foodLog.push(foodItem);
+            localStorage.setItem('foodLog', JSON.stringify(foodLog));
+
+            hideAddFoodModal();
+            document.getElementById('addFoodForm').reset();
+            loadFoodLog();
+            updateNutritionProgress();
+        }
+
+        function addWater(amount) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const waterLog = JSON.parse(localStorage.getItem('waterLog') || '[]');
+            waterLog.push({
+                id: 'water_' + Date.now(),
+                amount: amount,
+                timestamp: new Date().toISOString(),
+                userId: currentUser.id
+            });
+            localStorage.setItem('waterLog', JSON.stringify(waterLog));
+            loadFoodLog();
+        }
+
+        function loadFoodLog() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Load food items
+            const foodLog = JSON.parse(localStorage.getItem('foodLog') || '[]');
+            const todaysFoodLog = foodLog.filter(item => 
+                item.userId === currentUser.id && 
+                new Date(item.timestamp) >= today
+            );
+
+            // Load water intake
+            const waterLog = JSON.parse(localStorage.getItem('waterLog') || '[]');
+            const todaysWaterLog = waterLog.filter(item => 
+                item.userId === currentUser.id && 
+                new Date(item.timestamp) >= today
+            );
+
+            // Calculate totals by category
+            const mealTotals = {
+                breakfast: { calories: 0, items: [] },
+                lunch: { calories: 0, items: [] },
+                dinner: { calories: 0, items: [] },
+                snack: { calories: 0, items: [] }
+            };
+
+            todaysFoodLog.forEach(item => {
+                mealTotals[item.category].calories += item.calories;
+                mealTotals[item.category].items.push(item);
+            });
+
+            // Update meal sections
+            Object.keys(mealTotals).forEach(meal => {
+                const caloriesElement = document.getElementById(`${meal}Calories`);
+                const itemsContainer = document.getElementById(`${meal}Items`);
+                
+                if (caloriesElement) {
+                    caloriesElement.textContent = `${mealTotals[meal].calories} cal`;
+                }
+                
+                if (itemsContainer) {
+                    itemsContainer.innerHTML = mealTotals[meal].items.map(item => `
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg group relative">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">${item.name}</h4>
+                                <div class="text-xs text-gray-600">
+                                    ${item.calories} cal ${item.protein ? `· ${item.protein}g protein` : ''}
+                                </div>
+                            </div>
+                            <button onclick="deleteFoodItem('${item.id}')" 
+                                    class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `).join('') || `<p class="text-gray-500 text-center text-sm">No ${meal} logged</p>`;
+                }
+            });
+
+            updateNutritionProgress();
+        }
+
+        function updateNutritionProgress() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) return;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Get today's food and water logs
+            const foodLog = JSON.parse(localStorage.getItem('foodLog') || '[]');
+            const waterLog = JSON.parse(localStorage.getItem('waterLog') || '[]');
+
+            const todaysFoodLog = foodLog.filter(item => 
+                item.userId === currentUser.id && 
+                new Date(item.timestamp) >= today
+            );
+
+            const todaysWaterLog = waterLog.filter(item => 
+                item.userId === currentUser.id && 
+                new Date(item.timestamp) >= today
+            );
+
+            // Calculate totals
+            const totalCalories = todaysFoodLog.reduce((sum, item) => sum + item.calories, 0);
+            const totalProtein = todaysFoodLog.reduce((sum, item) => sum + (item.protein || 0), 0);
+            const totalWater = todaysWaterLog.reduce((sum, item) => sum + item.amount, 0);
+
+            // Update progress bars and text
+            const calorieGoal = 2000;
+            const proteinGoal = 60;
+            const waterGoal = 2000;
+
+            // Calories
+            document.getElementById('calorieProgress').textContent = `${totalCalories}/${calorieGoal}`;
+            document.getElementById('calorieProgressBar').style.width = `${Math.min(100, (totalCalories/calorieGoal) * 100)}%`;
+
+            // Protein
+            document.getElementById('proteinProgress').textContent = `${totalProtein}/${proteinGoal}g`;
+            document.getElementById('proteinProgressBar').style.width = `${Math.min(100, (totalProtein/proteinGoal) * 100)}%`;
+
+            // Water
+            document.getElementById('waterProgress').textContent = `${totalWater}/${waterGoal}ml`;
+            document.getElementById('waterProgressBar').style.width = `${Math.min(100, (totalWater/waterGoal) * 100)}%`;
+        }
+
+        function deleteFoodItem(itemId) {
+            if (confirm('Are you sure you want to delete this food item?')) {
+                const foodLog = JSON.parse(localStorage.getItem('foodLog') || '[]');
+                const updatedLog = foodLog.filter(item => item.id !== itemId);
+                localStorage.setItem('foodLog', JSON.stringify(updatedLog));
+                loadFoodLog();
+            }
+        }
+
+        // Initialize everything
+        initializeDashboard();
+        loadJournalEntries('all');
+        loadBooks();
+        loadGoals();
+        loadFoodLog();
+    </script>
+</body>
+</html>

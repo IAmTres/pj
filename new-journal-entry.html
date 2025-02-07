@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Journal Entry - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="user-dashboard.html" class="text-primary-600 text-2xl font-bold">MindJournal</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300 px-3">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="ml-3 relative">
+                        <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex min-h-screen bg-gray-50">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white border-r border-gray-200 fixed h-full overflow-y-auto pt-20">
+            <div class="px-4 py-6 space-y-8">
+                <!-- Personal Library Section -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Personal Library</h3>
+                    <div class="space-y-4">
+                        <!-- Books -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">Reading List</h4>
+                            <ul class="space-y-2" id="readingList">
+                                <!-- Books will be loaded here -->
+                            </ul>
+                            <button onclick="addToLibrary('book')" class="mt-2 text-sm text-primary-600 hover:text-primary-700">
+                                <i class="fas fa-plus mr-1"></i> Add Book
+                            </button>
+                        </div>
+                        
+                        <!-- Podcasts -->
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">Favorite Podcasts</h4>
+                            <ul class="space-y-2" id="podcastList">
+                                <!-- Podcasts will be loaded here -->
+                            </ul>
+                            <button onclick="addToLibrary('podcast')" class="mt-2 text-sm text-primary-600 hover:text-primary-700">
+                                <i class="fas fa-plus mr-1"></i> Add Podcast
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goals & Aspirations -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Goals & Aspirations</h3>
+                    <div class="space-y-3" id="goalsList">
+                        <!-- Goals will be loaded here -->
+                    </div>
+                    <button onclick="addGoal()" class="mt-2 text-sm text-primary-600 hover:text-primary-700">
+                        <i class="fas fa-plus mr-1"></i> Add Goal
+                    </button>
+                </div>
+
+                <!-- Journal Prompts -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Journal Prompts</h3>
+                    <div class="space-y-3">
+                        <button onclick="usePrompt('reflection')" class="w-full p-3 rounded-lg bg-blue-50 hover:bg-blue-100 text-left text-sm">
+                            🤔 Reflection: What's been on your mind lately?
+                        </button>
+                        <button onclick="usePrompt('gratitude')" class="w-full p-3 rounded-lg bg-green-50 hover:bg-green-100 text-left text-sm">
+                            🙏 Gratitude: Name three unexpected joys today.
+                        </button>
+                        <button onclick="usePrompt('growth')" class="w-full p-3 rounded-lg bg-purple-50 hover:bg-purple-100 text-left text-sm">
+                            🌱 Growth: What's challenging you right now?
+                        </button>
+                        <button onclick="usePrompt('future')" class="w-full p-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-left text-sm">
+                            🎯 Future: Visualize yourself in 5 years.
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-64">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">New Journal Entry</h1>
+            
+            <form id="journalForm" onsubmit="handleJournalSubmit(event)" class="space-y-8">
+                <!-- Date and Time -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Date and Time</label>
+                    <input type="datetime-local" id="entryDateTime" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
+                </div>
+
+                <!-- Mood Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">How are you feeling?</label>
+                    <div class="grid grid-cols-5 gap-4">
+                        <button type="button" onclick="selectMood('great')" class="mood-btn p-4 rounded-lg border-2 border-transparent hover:border-primary-500 transition-all duration-300">
+                            <i class="fas fa-grin-beam text-3xl text-green-500"></i>
+                            <span class="block mt-2 text-sm">Great</span>
+                        </button>
+                        <button type="button" onclick="selectMood('good')" class="mood-btn p-4 rounded-lg border-2 border-transparent hover:border-primary-500 transition-all duration-300">
+                            <i class="fas fa-smile text-3xl text-blue-500"></i>
+                            <span class="block mt-2 text-sm">Good</span>
+                        </button>
+                        <button type="button" onclick="selectMood('okay')" class="mood-btn p-4 rounded-lg border-2 border-transparent hover:border-primary-500 transition-all duration-300">
+                            <i class="fas fa-meh text-3xl text-yellow-500"></i>
+                            <span class="block mt-2 text-sm">Okay</span>
+                        </button>
+                        <button type="button" onclick="selectMood('down')" class="mood-btn p-4 rounded-lg border-2 border-transparent hover:border-primary-500 transition-all duration-300">
+                            <i class="fas fa-frown text-3xl text-orange-500"></i>
+                            <span class="block mt-2 text-sm">Down</span>
+                        </button>
+                        <button type="button" onclick="selectMood('rough')" class="mood-btn p-4 rounded-lg border-2 border-transparent hover:border-primary-500 transition-all duration-300">
+                            <i class="fas fa-sad-tear text-3xl text-red-500"></i>
+                            <span class="block mt-2 text-sm">Rough</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="selectedMood" required>
+                </div>
+
+                <!-- Energy Level -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Energy Level</label>
+                    <input type="range" min="1" max="10" value="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" id="energyLevel">
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>Low Energy</span>
+                        <span>High Energy</span>
+                    </div>
+                </div>
+
+                <!-- Activities -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">What have you done today? (Select all that apply)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="activities" value="exercise" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span>Exercise</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="activities" value="meditation" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span>Meditation</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="activities" value="reading" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span>Reading</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="activities" value="socializing" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span>Socialising</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="activities" value="work" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span>Work</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="activities" value="hobbies" class="rounded text-primary-600 focus:ring-primary-500">
+                            <span>Hobbies</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Gratitude -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">What are you grateful for today?</label>
+                    <textarea id="gratitude" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="List three things you're grateful for..."></textarea>
+                </div>
+
+                <!-- Context Section -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Weather -->
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Weather</label>
+                        <div class="flex items-center space-x-2">
+                            <select id="weather" class="flex-1 rounded-lg border-gray-300">
+                                <option value="sunny">☀️ Sunny</option>
+                                <option value="cloudy">☁️ Cloudy</option>
+                                <option value="rainy">🌧️ Rainy</option>
+                                <option value="snowy">❄️ Snowy</option>
+                                <option value="stormy">⛈️ Stormy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input type="text" id="location" class="w-full rounded-lg border-gray-300" placeholder="Where are you?">
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                        <div class="flex flex-wrap gap-2" id="tagContainer">
+                            <input type="text" id="tagInput" class="flex-1 rounded-lg border-gray-300" placeholder="Add tags..." onkeydown="handleTagInput(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Journal Entry -->
+                <!-- File Attachments -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
+                    <div class="space-y-2">
+                        <div id="attachmentList" class="space-y-2">
+                            <!-- Attachments will be listed here -->
+                        </div>
+                        <div class="flex items-center justify-center w-full">
+                            <label class="w-full flex flex-col items-center px-4 py-6 bg-white text-primary-600 rounded-lg shadow-lg tracking-wide border border-primary-200 cursor-pointer hover:bg-primary-50 transition-colors duration-300">
+                                <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                                <span class="mt-2 text-sm">Click to attach files</span>
+                                <input type="file" id="fileInput" class="hidden" multiple onchange="handleFileSelect(event)">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Journal Entry</label>
+                    <div class="border border-gray-300 rounded-lg p-2">
+                        <!-- Rich Text Controls -->
+                        <div class="flex flex-wrap gap-2 mb-2 p-1 bg-gray-50 rounded-lg">
+                            <div class="flex space-x-1">
+                                <button type="button" onclick="formatText('bold')" class="p-2 hover:bg-white rounded" title="Bold">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" onclick="formatText('italic')" class="p-2 hover:bg-white rounded" title="Italic">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" onclick="formatText('underline')" class="p-2 hover:bg-white rounded" title="Underline">
+                                    <i class="fas fa-underline"></i>
+                                </button>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button type="button" onclick="formatText('h1')" class="p-2 hover:bg-white rounded" title="Heading 1">
+                                    <i class="fas fa-heading"></i>1
+                                </button>
+                                <button type="button" onclick="formatText('h2')" class="p-2 hover:bg-white rounded" title="Heading 2">
+                                    <i class="fas fa-heading"></i>2
+                                </button>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button type="button" onclick="formatText('list')" class="p-2 hover:bg-white rounded" title="Bullet List">
+                                    <i class="fas fa-list-ul"></i>
+                                </button>
+                                <button type="button" onclick="formatText('numbered-list')" class="p-2 hover:bg-white rounded" title="Numbered List">
+                                    <i class="fas fa-list-ol"></i>
+                                </button>
+                                <button type="button" onclick="formatText('quote')" class="p-2 hover:bg-white rounded" title="Quote">
+                                    <i class="fas fa-quote-right"></i>
+                                </button>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button type="button" onclick="insertTemplate('daily')" class="p-2 hover:bg-white rounded text-sm" title="Daily Template">
+                                    📅 Daily
+                                </button>
+                                <button type="button" onclick="insertTemplate('reflection')" class="p-2 hover:bg-white rounded text-sm" title="Reflection Template">
+                                    🤔 Reflection
+                                </button>
+                                <button type="button" onclick="insertTemplate('gratitude')" class="p-2 hover:bg-white rounded text-sm" title="Gratitude Template">
+                                    🙏 Gratitude
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="journalContent" rows="15" class="w-full px-4 py-2 rounded-lg border-0 focus:ring-0" placeholder="Write your thoughts here..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Share with Psychologist -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="shareWithPsychologist" class="rounded text-primary-600 focus:ring-primary-500">
+                    <label for="shareWithPsychologist" class="ml-2 text-sm text-gray-700">Share this entry with my psychologist</label>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        Save Entry
+                    </button>
+                    <button type="button" onclick="window.location.href='user-dashboard.html'" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-300">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load user data
+        function loadUserData() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'user-login.html';
+                return;
+            }
+
+            // Load reading list
+            const readingList = JSON.parse(localStorage.getItem(`readingList_${currentUser.id}`) || '[]');
+            document.getElementById('readingList').innerHTML = readingList.map(book => `
+                <li class="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium">${book.title}</p>
+                        <p class="text-xs text-gray-500">${book.author}</p>
+                    </div>
+                    <button onclick="removeFromLibrary('book', '${book.id}')" class="text-gray-400 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+            `).join('');
+
+            // Load podcast list
+            const podcastList = JSON.parse(localStorage.getItem(`podcastList_${currentUser.id}`) || '[]');
+            document.getElementById('podcastList').innerHTML = podcastList.map(podcast => `
+                <li class="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium">${podcast.title}</p>
+                        <p class="text-xs text-gray-500">${podcast.author}</p>
+                    </div>
+                    <button onclick="removeFromLibrary('podcast', '${podcast.id}')" class="text-gray-400 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+            `).join('');
+
+            // Load goals
+            const goals = JSON.parse(localStorage.getItem(`goals_${currentUser.id}`) || '[]');
+            document.getElementById('goalsList').innerHTML = goals.map(goal => `
+                <div class="p-3 bg-${goal.category}-50 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-medium text-${goal.category}-900">${goal.title}</h4>
+                        <button onclick="removeGoal('${goal.id}')" class="text-gray-400 hover:text-red-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-${goal.category}-600 mt-1">Due: ${new Date(goal.deadline).toLocaleDateString()}</p>
+                </div>
+            `).join('');
+        }
+
+        // Library functions
+        let currentLibraryType = 'book';
+        
+        function addToLibrary(type) {
+            document.getElementById('modalTitle').textContent = type === 'book' ? 'Add Book' : 'Add Podcast';
+            document.getElementById('libraryModal').classList.remove('hidden');
+            currentLibraryType = type;
+        }
+
+        function closeLibraryModal() {
+            document.getElementById('libraryModal').classList.add('hidden');
+            document.getElementById('itemTitle').value = '';
+            document.getElementById('itemAuthor').value = '';
+            document.getElementById('itemNotes').value = '';
+        }
+
+        function saveLibraryItem() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const title = document.getElementById('itemTitle').value;
+            const author = document.getElementById('itemAuthor').value;
+            const notes = document.getElementById('itemNotes').value;
+
+            if (!title || !author) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const item = {
+                id: Date.now().toString(),
+                title,
+                author,
+                notes,
+                addedAt: new Date().toISOString()
+            };
+
+            const listKey = currentLibraryType === 'book' ? `readingList_${currentUser.id}` : `podcastList_${currentUser.id}`;
+            const currentList = JSON.parse(localStorage.getItem(listKey) || '[]');
+            currentList.push(item);
+            localStorage.setItem(listKey, JSON.stringify(currentList));
+
+            closeLibraryModal();
+            loadUserData();
+        }
+
+        function removeFromLibrary(type, id) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const listKey = type === 'book' ? `readingList_${currentUser.id}` : `podcastList_${currentUser.id}`;
+            const currentList = JSON.parse(localStorage.getItem(listKey) || '[]');
+            const updatedList = currentList.filter(item => item.id !== id);
+            localStorage.setItem(listKey, JSON.stringify(updatedList));
+            loadUserData();
+        }
+
+        // Goal functions
+        function addGoal() {
+            document.getElementById('goalModal').classList.remove('hidden');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').classList.add('hidden');
+            document.getElementById('goalTitle').value = '';
+            document.getElementById('goalCategory').value = 'personal';
+            document.getElementById('goalDeadline').value = '';
+        }
+
+        function saveGoal() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const title = document.getElementById('goalTitle').value;
+            const category = document.getElementById('goalCategory').value;
+            const deadline = document.getElementById('goalDeadline').value;
+
+            if (!title || !deadline) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const goal = {
+                id: Date.now().toString(),
+                title,
+                category,
+                deadline,
+                createdAt: new Date().toISOString()
+            };
+
+            const goals = JSON.parse(localStorage.getItem(`goals_${currentUser.id}`) || '[]');
+            goals.push(goal);
+            localStorage.setItem(`goals_${currentUser.id}`, JSON.stringify(goals));
+
+            closeGoalModal();
+            loadUserData();
+        }
+
+        function removeGoal(id) {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const goals = JSON.parse(localStorage.getItem(`goals_${currentUser.id}`) || '[]');
+            const updatedGoals = goals.filter(goal => goal.id !== id);
+            localStorage.setItem(`goals_${currentUser.id}`, JSON.stringify(updatedGoals));
+            loadUserData();
+        }
+
+        // Journal prompt functions
+        function usePrompt(type) {
+            const prompts = {
+                reflection: "What's been occupying your thoughts lately? How do these thoughts make you feel, and what might they be trying to tell you?",
+                gratitude: "Take a moment to reflect on three unexpected moments of joy or kindness you experienced today. What made them special?",
+                growth: "What's currently challenging you, and how are you approaching it? What have you learned about yourself through this challenge?",
+                future: "Imagine yourself 5 years from now. What does your ideal day look like? What habits and achievements have helped you get there?"
+            };
+
+            const journalContent = document.getElementById('journalContent');
+            journalContent.value = prompts[type] + '\n\n' + (journalContent.value || '');
+            journalContent.focus();
+        }
+
+        // Initialize the date-time field with current date and time
+        document.getElementById('entryDateTime').value = new Date().toISOString().slice(0, 16);
+
+        // Initialize user data
+        loadUserData();
+
+        // Mood selection
+        function selectMood(mood) {
+            document.getElementById('selectedMood').value = mood;
+            // Remove active class from all mood buttons
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('border-primary-500');
+            });
+            // Add active class to selected mood button
+            event.currentTarget.classList.add('border-primary-500');
+        }
+
+        // Text formatting functions
+        function formatText(format) {
+            const textarea = document.getElementById('journalContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            let formattedText = '';
+
+            switch(format) {
+                case 'bold':
+                    formattedText = `**${selectedText}**`;
+                    break;
+                case 'italic':
+                    formattedText = `*${selectedText}*`;
+                    break;
+                case 'underline':
+                    formattedText = `_${selectedText}_`;
+                    break;
+                case 'h1':
+                    formattedText = `\n# ${selectedText}`;
+                    break;
+                case 'h2':
+                    formattedText = `\n## ${selectedText}`;
+                    break;
+                case 'list':
+                    formattedText = '\n- ' + selectedText.split('\n').join('\n- ');
+                    break;
+                case 'numbered-list':
+                    formattedText = selectedText.split('\n').map((line, i) => `\n${i + 1}. ${line}`).join('');
+                    break;
+                case 'quote':
+                    formattedText = '\n> ' + selectedText.split('\n').join('\n> ');
+                    break;
+            }
+
+            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+            textarea.focus();
+            textarea.selectionStart = start + formattedText.length;
+            textarea.selectionEnd = start + formattedText.length;
+        }
+
+        // Template insertion
+        function insertTemplate(type) {
+            const templates = {
+                daily: `# Daily Entry - ${new Date().toLocaleDateString()}
+
+## Morning Reflection
+- How did you sleep?
+- What's your energy level?
+- Main goals for today?
+
+## Evening Check-in
+- Highlight of the day:
+- Challenges faced:
+- Tomorrow's priorities:
+`,
+                reflection: `# Reflection - ${new Date().toLocaleDateString()}
+
+## Current State
+- Emotions I'm feeling:
+- Physical sensations:
+- Thoughts running through my mind:
+
+## Deeper Dive
+- What triggered these feelings?
+- What can I learn from this?
+- How can I move forward?
+`,
+                gratitude: `# Gratitude Practice - ${new Date().toLocaleDateString()}
+
+1. I'm grateful for...
+2. Someone who made me smile today...
+3. Something I accomplished...
+
+## Silver Linings
+- Challenge faced:
+- Positive aspect or lesson:
+`
+            };
+
+            const textarea = document.getElementById('journalContent');
+            textarea.value = templates[type] + '\n' + textarea.value;
+            textarea.focus();
+        }
+
+        // Tag handling
+        let tags = [];
+
+        function handleTagInput(event) {
+            if (event.key === 'Enter' || event.key === ',') {
+                event.preventDefault();
+                const input = event.target;
+                const tag = input.value.trim().replace(',', '');
+                
+                if (tag && !tags.includes(tag)) {
+                    tags.push(tag);
+                    renderTags();
+                }
+                
+                input.value = '';
+            }
+        }
+
+        function removeTag(tag) {
+            tags = tags.filter(t => t !== tag);
+            renderTags();
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tagContainer');
+            const input = document.getElementById('tagInput');
+            container.innerHTML = tags.map(tag => `
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-lg text-sm flex items-center">
+                    ${tag}
+                    <button onclick="removeTag('${tag}')" class="ml-1 text-purple-600 hover:text-purple-800">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </span>
+            `).join('') + container.innerHTML;
+            input.parentNode.appendChild(input);
+        }
+
+        // Form submission
+        // File handling
+        let attachedFiles = [];
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const maxFileSize = 5 * 1024 * 1024; // 5MB limit
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            
+            for (let file of files) {
+                if (file.size > maxFileSize) {
+                    alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    continue;
+                }
+                if (!allowedTypes.includes(file.type)) {
+                    alert(`File ${file.name} is not supported. Please upload images, PDFs, or Word documents.`);
+                    continue;
+                }
+                attachedFiles.push(file);
+            }
+            updateAttachmentList();
+        }
+
+        function removeAttachment(index) {
+            attachedFiles.splice(index, 1);
+            updateAttachmentList();
+        }
+
+        function updateAttachmentList() {
+            const container = document.getElementById('attachmentList');
+            container.innerHTML = attachedFiles.map((file, index) => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas ${getFileIcon(file.type)} text-gray-500"></i>
+                        <span class="text-sm text-gray-700">${file.name}</span>
+                        <span class="text-xs text-gray-500">(${formatFileSize(file.size)})</span>
+                    </div>
+                    <button onclick="removeAttachment(${index})" class="text-red-500 hover:text-red-700 transition-colors duration-300">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function getFileIcon(fileType) {
+            if (fileType.startsWith('image/')) return 'fa-image';
+            if (fileType === 'application/pdf') return 'fa-file-pdf';
+            if (fileType.includes('word')) return 'fa-file-word';
+            return 'fa-file';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        async function handleJournalSubmit(event) {
+            event.preventDefault();
+            
+            // Get current user
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                alert('Please log in to create a journal entry');
+                window.location.href = 'user-login.html';
+                return;
+            }
+            
+            // Validate required fields
+            if (!document.getElementById('selectedMood').value) {
+                alert('Please select your mood');
+                return;
+            }
+
+            if (!document.getElementById('journalContent').value.trim()) {
+                alert('Please write something in your journal entry');
+                return;
+            }
+
+            // Convert attachments to base64
+            const attachmentPromises = Array.from(attachedFiles).map(file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve({
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: reader.result
+                    });
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            try {
+                const attachments = await Promise.all(attachmentPromises);
+                
+                // Create entry with unique ID
+                const entryData = {
+                    id: 'entry_' + Date.now() + Math.random().toString(36).substr(2, 9),
+                    userId: currentUser.id,
+                    dateTime: document.getElementById('entryDateTime').value,
+                    mood: document.getElementById('selectedMood').value,
+                    energyLevel: parseInt(document.getElementById('energyLevel').value),
+                    activities: Array.from(document.querySelectorAll('input[name="activities"]:checked')).map(cb => cb.value),
+                    gratitude: document.getElementById('gratitude').value,
+                    journalContent: document.getElementById('journalContent').value,
+                    shareWithPsychologist: document.getElementById('shareWithPsychologist').checked,
+                    psychologistId: currentUser.connectedPsychologist,
+                    weather: document.getElementById('weather').value,
+                    location: document.getElementById('location').value,
+                    tags: tags,
+                    attachments: attachments,
+                    createdAt: new Date().toISOString(),
+                    lastModified: new Date().toISOString(),
+                    metrics: {
+                        wordCount: document.getElementById('journalContent').value.split(/\s+/).length,
+                        characterCount: document.getElementById('journalContent').value.length
+                    }
+            };
+
+            // Save to localStorage
+            const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+            entries.push(entryData);
+            localStorage.setItem('journalEntries', JSON.stringify(entries));
+
+            // Update user's journal stats
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex].journalStats.totalEntries++;
+                if (entryData.shareWithPsychologist) {
+                    users[userIndex].journalStats.sharedEntries++;
+                }
+                users[userIndex].journalStats.lastEntryDate = entryData.dateTime;
+                
+                // Update favorite activities
+                const activities = entryData.activities;
+                const currentFavorites = users[userIndex].preferences.favoriteActivities;
+                activities.forEach(activity => {
+                    const index = currentFavorites.findIndex(fa => fa.name === activity);
+                    if (index === -1) {
+                        currentFavorites.push({ name: activity, count: 1 });
+                    } else {
+                        currentFavorites[index].count++;
+                    }
+                });
+                
+                // Sort favorites by count
+                users[userIndex].preferences.favoriteActivities = currentFavorites
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5); // Keep top 5
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(users[userIndex]));
+            }
+
+            // If shared with psychologist, notify them (in a real app this would be a server notification)
+            if (entryData.shareWithPsychologist && entryData.psychologistId) {
+                const notifications = JSON.parse(localStorage.getItem('psychologistNotifications') || '{}');
+                if (!notifications[entryData.psychologistId]) {
+                    notifications[entryData.psychologistId] = [];
+                }
+                notifications[entryData.psychologistId].push({
+                    id: 'notif_' + Date.now(),
+                    type: 'new_journal_entry',
+                    userId: currentUser.id,
+                    userName: currentUser.name,
+                    entryId: entryData.id,
+                    timestamp: new Date().toISOString(),
+                    read: false
+                });
+                localStorage.setItem('psychologistNotifications', JSON.stringify(notifications));
+            }
+
+            // Redirect back to dashboard
+            window.location.href = 'user-dashboard.html';
+        }
+    </script>
+</body>
+</html>

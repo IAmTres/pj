@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychologist Dashboard - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-primary-600 text-2xl font-bold">MindJournal</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300 px-3">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="ml-3 relative">
+                        <button class="text-gray-600 hover:text-primary-600 transition-colors duration-300">
+                            <i class="fas fa-user-circle text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Message -->
+        <div class="mb-8">
+            <h1 id="welcomeMessage" class="text-2xl font-bold text-gray-900">Welcome to your Dashboard</h1>
+            <p class="text-gray-600 mt-2">Here's an overview of your clients and their progress</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <i class="fas fa-users text-primary-600 text-2xl mb-4"></i>
+                <h3 class="font-bold text-gray-900">Active Clients</h3>
+                <p id="activeClientsCount" class="text-2xl font-bold text-primary-600 mt-2">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <i class="fas fa-book text-primary-600 text-2xl mb-4"></i>
+                <h3 class="font-bold text-gray-900">Shared Entries</h3>
+                <p id="sharedEntriesCount" class="text-2xl font-bold text-primary-600 mt-2">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <i class="fas fa-calendar text-primary-600 text-2xl mb-4"></i>
+                <h3 class="font-bold text-gray-900">Upcoming Sessions</h3>
+                <p id="upcomingSessionsCount" class="text-2xl font-bold text-primary-600 mt-2">0</p>
+            </div>
+        </div>
+
+        <!-- Client List -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-900">Your Clients</h2>
+                <div class="flex space-x-2">
+                    <button onclick="filterClients('all')" class="px-4 py-2 text-sm rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors duration-300">
+                        All
+                    </button>
+                    <button onclick="filterClients('recent')" class="px-4 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-300">
+                        Recent Activity
+                    </button>
+                    <button onclick="filterClients('shared')" class="px-4 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors duration-300">
+                        Shared Entries
+                    </button>
+                </div>
+            </div>
+            <div id="clientList" class="space-y-4">
+                <!-- Client list will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
+            <div id="recentActivity" class="space-y-4">
+                <!-- Recent activity will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize psychologist data when they log in
+        function initializePsychologistData() {
+            const currentPsychologist = JSON.parse(localStorage.getItem('currentPsychologist'));
+            if (currentPsychologist) {
+                document.getElementById('welcomeMessage').textContent = 
+                    `Welcome back, Dr. ${currentPsychologist.name}`;
+            }
+        }
+
+        // Function to get relative time
+        function getRelativeTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+            if (diffInHours < 1) return 'Just now';
+            if (diffInHours < 24) return `${diffInHours} hours ago`;
+            if (diffInHours < 48) return 'Yesterday';
+            return `${Math.floor(diffInHours / 24)} days ago`;
+        }
+
+        // Function to load and display connected clients
+        function loadConnectedClients(filter = 'all') {
+            const clientListContainer = document.getElementById('clientList');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const currentPsychologist = JSON.parse(localStorage.getItem('currentPsychologist'));
+            const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+
+            // Filter users who have shared entries with this psychologist
+            let connectedClients = users.filter(user => {
+                return entries.some(entry => 
+                    entry.shareWithPsychologist && 
+                    entry.psychologistId === currentPsychologist?.id
+                );
+            });
+
+            // Apply additional filters
+            if (filter === 'recent') {
+                connectedClients = connectedClients.filter(client => {
+                    const latestEntry = entries
+                        .filter(entry => entry.userId === client.id)
+                        .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))[0];
+                    return latestEntry && (new Date() - new Date(latestEntry.dateTime)) < 7 * 24 * 60 * 60 * 1000; // Within last 7 days
+                });
+            } else if (filter === 'shared') {
+                connectedClients = connectedClients.filter(client => {
+                    return entries.some(entry => 
+                        entry.userId === client.id && 
+                        entry.shareWithPsychologist
+                    );
+                });
+            }
+
+            // Update stats
+            document.getElementById('activeClientsCount').textContent = connectedClients.length;
+            document.getElementById('sharedEntriesCount').textContent = entries.filter(e => e.shareWithPsychologist).length;
+            document.getElementById('upcomingSessionsCount').textContent = '0'; // This would be implemented with a real scheduling system
+
+            if (connectedClients.length === 0) {
+                clientListContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-users text-4xl mb-4"></i>
+                        <p>No connected clients yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            clientListContainer.innerHTML = connectedClients.map(client => {
+                const clientEntries = entries
+                    .filter(entry => entry.userId === client.id && entry.shareWithPsychologist)
+                    .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+                
+                const latestEntry = clientEntries[0];
+                const lastActivity = latestEntry ? getRelativeTime(latestEntry.dateTime) : 'No recent activity';
+                const entryCount = clientEntries.length;
+
+                return `
+                    <div class="border-b border-gray-200 pb-4">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-primary-50 p-3 rounded-full">
+                                    <i class="fas fa-user text-primary-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">${client.name}</h3>
+                                    <p class="text-gray-600 text-sm mt-1">Last activity: ${lastActivity}</p>
+                                    <p class="text-gray-600 text-sm">Shared entries: ${entryCount}</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="viewClientJournal('${client.id}')" 
+                                        class="px-4 py-2 text-sm rounded-lg bg-primary-50 text-primary-600 hover:bg-primary-100 transition-colors duration-300">
+                                    View Journal
+                                </button>
+                                <button onclick="scheduleSession('${client.id}')"
+                                        class="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-300">
+                                    Schedule Session
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Function to load recent activity
+        function loadRecentActivity() {
+            const activityContainer = document.getElementById('recentActivity');
+            const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const currentPsychologist = JSON.parse(localStorage.getItem('currentPsychologist'));
+
+            const recentSharedEntries = entries
+                .filter(entry => 
+                    entry.shareWithPsychologist && 
+                    entry.psychologistId === currentPsychologist?.id
+                )
+                .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime))
+                .slice(0, 5);
+
+            if (recentSharedEntries.length === 0) {
+                activityContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-history text-4xl mb-4"></i>
+                        <p>No recent activity</p>
+                    </div>
+                `;
+                return;
+            }
+
+            activityContainer.innerHTML = recentSharedEntries.map(entry => {
+                const user = users.find(u => u.id === entry.userId);
+                return `
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-primary-50 p-2 rounded-full">
+                            <i class="fas fa-book text-primary-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-900">
+                                <span class="font-medium">${user?.name || 'Unknown User'}</span> 
+                                shared a new journal entry
+                            </p>
+                            <p class="text-gray-600 text-sm">${getRelativeTime(entry.dateTime)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Function to view client's journal
+        function viewClientJournal(clientId) {
+            // In a real app, this would navigate to a detailed view of the client's shared journal entries
+            alert('This feature will show all shared journal entries from this client.');
+        }
+
+        // Function to schedule a session
+        function scheduleSession(clientId) {
+            // In a real app, this would open a session scheduling interface
+            alert('This feature will allow you to schedule a session with this client.');
+        }
+
+        // Filter clients
+        function filterClients(filter) {
+            loadConnectedClients(filter);
+        }
+
+        // Initialize the dashboard
+        initializePsychologistData();
+        loadConnectedClients();
+        loadRecentActivity();
+    </script>
+</body>
+</html>

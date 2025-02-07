@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <!-- Decorative blobs -->
+        <div class="absolute top-0 left-0 -translate-x-12 -translate-y-12 transform opacity-20">
+            <svg width="400" height="400" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#0ea5e9" d="M44.7,-76.4C58.8,-69.2,71.8,-59.1,79.6,-45.8C87.4,-32.5,90,-16.3,88.5,-1.5C87,13.3,81.4,26.5,73.6,38.2C65.8,49.9,55.7,60,43.3,65.7C30.9,71.4,16.2,72.7,1.6,70.3C-13,67.9,-26,61.9,-39.7,55.3C-53.4,48.7,-67.8,41.6,-74.8,29.8C-81.8,18,-81.5,1.5,-77.2,-12.7C-72.9,-26.9,-64.6,-38.8,-53.7,-47.2C-42.8,-55.6,-29.3,-60.5,-15.9,-67.8C-2.5,-75.1,10.8,-84.8,24.8,-84.8C38.8,-84.8,53.5,-75.1,67.5,-67.9Z" transform="translate(100 100)" />
+            </svg>
+        </div>
+        <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl relative z-10">
+            <div>
+                <div class="text-center">
+                    <span class="text-primary-600 text-4xl mb-4 block"><i class="fas fa-user-plus"></i></span>
+                    <h2 class="text-center text-3xl font-extrabold text-gray-900 mb-2">
+                        Create your account
+                    </h2>
+                    <p class="mt-2 text-center text-sm text-gray-600">
+                        Already have an account?
+                        <a href="/user-login.html" class="font-medium text-primary-600 hover:text-primary-500 transition-colors duration-300">
+                            Sign in
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <form class="mt-8 space-y-6" onsubmit="handleRegistration(event)">
+            <script>
+                function handleRegistration(event) {
+                    event.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email-address').value;
+                    const password = document.getElementById('password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+                    
+                    if (password !== confirmPassword) {
+                        alert('Passwords do not match!');
+                        return;
+                    }
+
+                    // Check if username or email already exists
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    if (users.some(u => u.email === email)) {
+                        alert('An account with this email already exists');
+                        return;
+                    }
+                    if (users.some(u => u.username === username)) {
+                        alert('This username is already taken');
+                        return;
+                    }
+                    
+                    // Create new user data with unique ID
+                    const userData = {
+                        id: 'usr_' + Date.now() + Math.random().toString(36).substr(2, 9),
+                        username,
+                        name,
+                        email,
+                        registeredAt: new Date().toISOString(),
+                        journalStats: {
+                            totalEntries: 0,
+                            sharedEntries: 0,
+                            lastEntryDate: null
+                        },
+                        preferences: {
+                            defaultMood: null,
+                            favoriteActivities: [],
+                            shareWithPsychologist: false
+                        },
+                        connectedPsychologist: null
+                    };
+
+                    // Store in users list
+                    users.push(userData);
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Set as current user
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    
+                    // Initialize journal entries array for this user if it doesn't exist
+                    const allJournalEntries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+                    localStorage.setItem('journalEntries', JSON.stringify(allJournalEntries));
+                    
+                    window.location.href = 'user-dashboard.html';
+                }
+            </script>
+                <div class="space-y-4">
+                    <div>
+                        <label for="username" class="sr-only">Username</label>
+                        <input id="username" name="username" type="text" required class="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-300 sm:text-sm" placeholder="Username">
+                    </div>
+                    <div>
+                        <label for="name" class="sr-only">Full Name</label>
+                        <input id="name" name="name" type="text" required class="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-300 sm:text-sm" placeholder="Full Name">
+                    </div>
+                    <div>
+                        <label for="email-address" class="sr-only">Email address</label>
+                        <input id="email-address" name="email" type="email" autocomplete="email" required class="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-300 sm:text-sm" placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required class="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-300 sm:text-sm" placeholder="Password">
+                    </div>
+                    <div>
+                        <label for="confirm-password" class="sr-only">Confirm Password</label>
+                        <input id="confirm-password" name="confirm-password" type="password" required class="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-300 sm:text-sm" placeholder="Confirm Password">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-user-plus"></i>
+                        </span>
+                        Create Account
+                    </button>
+                </div>
+            </form>
+            <div class="text-center">
+                <a href="/" class="text-sm text-gray-600 hover:text-primary-500 transition-colors duration-300">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to home
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
