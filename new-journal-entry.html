@@ -697,7 +697,65 @@
         async function handleJournalSubmit(event) {
             event.preventDefault();
             
+            // Get form data
+            const form = event.target;
+            const mood = document.getElementById('selectedMood').value;
+            const energyLevel = document.getElementById('energyLevel').value;
+            const activities = Array.from(form.querySelectorAll('input[name="activities"]:checked')).map(cb => cb.value);
+            const content = document.getElementById('journalContent').value;
+            const title = document.getElementById('entryTitle').value;
+            const shareWithPsychologist = document.getElementById('shareWithPsychologist').checked;
+            
             // Get current user
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                alert('Please log in to save journal entries');
+                window.location.href = 'user-login.html';
+                return;
+            }
+            
+            // Create journal entry object
+            const journalEntry = {
+                id: Date.now().toString(),
+                userId: currentUser.id,
+                timestamp: new Date().toISOString(),
+                title: title,
+                mood: mood,
+                energyLevel: parseInt(energyLevel),
+                activities: activities,
+                content: content,
+                shareWithPsychologist: shareWithPsychologist,
+                tags: tags, // Global tags array
+                attachments: await Promise.all(attachedFiles.map(async file => {
+                    return {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: await readFileAsDataURL(file)
+                    };
+                }))
+            };
+            
+            // Save to localStorage
+            const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
+            entries.push(journalEntry);
+            localStorage.setItem('journalEntries', JSON.stringify(entries));
+            
+            // If shared with psychologist, add to shared entries
+            if (shareWithPsychologist && currentUser.psychologistId) {
+                const sharedEntries = JSON.parse(localStorage.getItem('sharedJournalEntries') || '[]');
+                sharedEntries.push({
+                    entryId: journalEntry.id,
+                    userId: currentUser.id,
+                    psychologistId: currentUser.psychologistId,
+                    timestamp: journalEntry.timestamp
+                });
+                localStorage.setItem('sharedJournalEntries', JSON.stringify(sharedEntries));
+            }
+            
+            // Show success message and redirect
+            alert('Journal entry saved successfully!');
+            window.location.href = 'user-dashboard.html';
             const currentUser = JSON.parse(localStorage.getItem('currentUser'));
             if (!currentUser) {
                 alert('Please log in to create a journal entry');

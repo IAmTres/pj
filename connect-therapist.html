@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect with Therapist - MindJournal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-poppins">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="user-dashboard.html" class="text-primary-600 text-2xl font-bold">MindJournal</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="window.location.href='user-dashboard.html'" class="text-gray-600 hover:text-primary-600 transition-colors duration-300 px-3">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Connect with Your Therapist</h1>
+            
+            <!-- Current Connection Status -->
+            <div id="connectionStatus" class="mb-8 p-4 rounded-lg bg-gray-50">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Connect Form -->
+            <div id="connectForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Therapist Code</label>
+                    <div class="flex gap-4">
+                        <input type="text" id="therapistCode" 
+                               placeholder="Enter your therapist's connection code" 
+                               class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <button onclick="connectWithTherapist()" 
+                                class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                            Connect
+                        </button>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-500">Ask your therapist for their unique connection code</p>
+                </div>
+            </div>
+
+            <!-- Connection History -->
+            <div class="mt-12">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Connection History</h2>
+                <div id="connectionHistory" class="space-y-4">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Settings -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Connection Settings</h2>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 rounded-lg bg-gray-50">
+                    <div>
+                        <h3 class="font-medium text-gray-900">Automatic Journal Sharing</h3>
+                        <p class="text-sm text-gray-500">Automatically share new journal entries with your therapist</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="autoShare" class="sr-only peer" onchange="updateSharingSettings()">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 rounded-lg bg-gray-50">
+                    <div>
+                        <h3 class="font-medium text-gray-900">Share Entry History</h3>
+                        <p class="text-sm text-gray-500">Allow your therapist to view your previous journal entries</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="shareHistory" class="sr-only peer" onchange="updateSharingSettings()">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data and connection status
+        function loadConnectionStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'user-login.html';
+                return;
+            }
+
+            const statusDiv = document.getElementById('connectionStatus');
+            if (currentUser.psychologistId) {
+                // Get therapist info
+                const therapists = JSON.parse(localStorage.getItem('therapists') || '[]');
+                const therapist = therapists.find(t => t.id === currentUser.psychologistId);
+                
+                if (therapist) {
+                    statusDiv.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                                        <i class="fas fa-user-md text-primary-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Connected with Dr. ${therapist.name}</h3>
+                                        <p class="text-sm text-gray-500">Connected since ${new Date(currentUser.therapistConnectedAt).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="disconnectTherapist()" 
+                                    class="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                Disconnect
+                            </button>
+                        </div>
+                    `;
+                }
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user-md text-gray-400 text-2xl"></i>
+                        </div>
+                        <h3 class="font-medium text-gray-900 mb-2">Not Connected</h3>
+                        <p class="text-sm text-gray-500">Connect with your therapist to share journal entries and receive guidance</p>
+                    </div>
+                `;
+            }
+
+            // Load connection history
+            loadConnectionHistory();
+            
+            // Load sharing settings
+            loadSharingSettings();
+        }
+
+        function connectWithTherapist() {
+            const code = document.getElementById('therapistCode').value.trim();
+            if (!code) {
+                alert('Please enter a therapist code');
+                return;
+            }
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const therapists = JSON.parse(localStorage.getItem('therapists') || '[]');
+            const therapist = therapists.find(t => t.connectionCode === code);
+
+            if (!therapist) {
+                alert('Invalid therapist code. Please check and try again.');
+                return;
+            }
+
+            // Update user's therapist connection
+            currentUser.psychologistId = therapist.id;
+            currentUser.therapistConnectedAt = new Date().toISOString();
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Add to connection history
+            const history = JSON.parse(localStorage.getItem('connectionHistory') || '[]');
+            history.push({
+                userId: currentUser.id,
+                therapistId: therapist.id,
+                connectedAt: new Date().toISOString(),
+                status: 'connected'
+            });
+            localStorage.setItem('connectionHistory', JSON.stringify(history));
+
+            // Refresh the page
+            loadConnectionStatus();
+        }
+
+        function disconnectTherapist() {
+            if (!confirm('Are you sure you want to disconnect from your therapist? This will stop sharing your journal entries.')) {
+                return;
+            }
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const history = JSON.parse(localStorage.getItem('connectionHistory') || '[]');
+            
+            // Add disconnection to history
+            history.push({
+                userId: currentUser.id,
+                therapistId: currentUser.psychologistId,
+                disconnectedAt: new Date().toISOString(),
+                status: 'disconnected'
+            });
+            localStorage.setItem('connectionHistory', JSON.stringify(history));
+
+            // Remove therapist connection
+            delete currentUser.psychologistId;
+            delete currentUser.therapistConnectedAt;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Refresh the page
+            loadConnectionStatus();
+        }
+
+        function loadConnectionHistory() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const history = JSON.parse(localStorage.getItem('connectionHistory') || '[]');
+            const therapists = JSON.parse(localStorage.getItem('therapists') || '[]');
+            
+            const userHistory = history.filter(h => h.userId === currentUser.id);
+            const historyDiv = document.getElementById('connectionHistory');
+            
+            if (userHistory.length === 0) {
+                historyDiv.innerHTML = '<p class="text-sm text-gray-500">No connection history yet</p>';
+                return;
+            }
+
+            historyDiv.innerHTML = userHistory.map(h => {
+                const therapist = therapists.find(t => t.id === h.therapistId);
+                const date = new Date(h.connectedAt || h.disconnectedAt).toLocaleDateString();
+                const statusColor = h.status === 'connected' ? 'text-green-600' : 'text-red-600';
+                const statusIcon = h.status === 'connected' ? 'fa-link' : 'fa-unlink';
+                
+                return `
+                    <div class="flex items-center justify-between p-4 rounded-lg bg-gray-50">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-user-md text-gray-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Dr. ${therapist?.name || 'Unknown'}</h4>
+                                <p class="text-sm text-gray-500">${date}</p>
+                            </div>
+                        </div>
+                        <div class="${statusColor}">
+                            <i class="fas ${statusIcon} mr-2"></i>
+                            ${h.status.charAt(0).toUpperCase() + h.status.slice(1)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadSharingSettings() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const settings = currentUser.sharingSettings || {
+                autoShare: true,
+                shareHistory: false
+            };
+
+            document.getElementById('autoShare').checked = settings.autoShare;
+            document.getElementById('shareHistory').checked = settings.shareHistory;
+        }
+
+        function updateSharingSettings() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            currentUser.sharingSettings = {
+                autoShare: document.getElementById('autoShare').checked,
+                shareHistory: document.getElementById('shareHistory').checked
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+
+        // Initialize
+        loadConnectionStatus();
+    </script>
+</body>
+</html>
