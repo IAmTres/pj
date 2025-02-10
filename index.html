@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindJournal - Online Psychology Journal Platform</title>
+    <title>PsychologyJournal - Online Psychology Journal Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="js/dashboard.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -137,10 +139,55 @@
                                     <span class="text-primary-600 font-semibold">PsychologyJournal Dashboard</span>
                                 </div>
                                 
-                                <!-- Main Image -->
-                                <img src="assets/images/digital-journal.png" 
-                                     alt="Digital Journal Interface" 
-                                     class="rounded-xl w-full h-auto object-cover shadow-lg">
+                                <!-- Dashboard Content -->
+                                <div class="relative w-full h-[calc(100%-3rem)] bg-gray-50 p-6 rounded-lg overflow-y-auto">
+                                    <!-- Dashboard Header -->
+                                    <div class="flex justify-between items-center mb-8">
+                                        <h2 class="text-2xl font-bold text-gray-900">Your Journal Dashboard</h2>
+                                        <button id="new-entry-btn" class="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                                            New Entry
+                                        </button>
+                                    </div>
+
+                                    <!-- Quick Stats -->
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <h3 class="stat-title">Total Entries</h3>
+                                            <p id="total-entries" class="stat-value">0</p>
+                                        </div>
+                                        <div class="stat-card">
+                                            <h3 class="stat-title">Shared with Therapist</h3>
+                                            <p id="shared-entries" class="stat-value">0</p>
+                                        </div>
+                                        <div class="stat-card">
+                                            <h3 class="stat-title">Current Streak</h3>
+                                            <p id="current-streak" class="stat-value">0 days</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mood Distribution -->
+                                    <div class="mood-distribution">
+                                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Your Mood Journey</h3>
+                                        <div id="mood-distribution" class="space-y-3"></div>
+                                    </div>
+
+                                    <!-- Entries Section -->
+                                    <div class="entries-section">
+                                        <div class="entries-header">
+                                            <h3 class="text-xl font-semibold text-gray-800">Your Journal Entries</h3>
+                                            <div class="entries-controls">
+                                                <input type="text" id="entry-search" class="search-box" placeholder="Search entries...">
+                                                <select id="filter-controls" class="filter-select">
+                                                    <option value="all">All Entries</option>
+                                                    <option value="shared">Shared with Therapist</option>
+                                                    <option value="private">Private Entries</option>
+                                                    <option value="archived">Archived</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div id="entries-container" class="entries-grid"></div>
+                                    </div>
+                                </div>
                                 
                                 <!-- App Footer -->
                                 <div class="mt-4 flex justify-between items-center px-4">
@@ -431,5 +478,43 @@
             </div>
         </div>
     </footer>
+    <!-- New Entry Modal -->
+    <div id="new-entry-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">New Journal Entry</h2>
+            <form id="new-entry-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <input type="text" name="title" class="w-full p-2 border border-gray-300 rounded-md" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                    <textarea name="content" rows="6" class="w-full p-2 border border-gray-300 rounded-md" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mood</label>
+                    <select name="mood" class="w-full p-2 border border-gray-300 rounded-md" required>
+                        <option value="Happy">Happy</option>
+                        <option value="Calm">Calm</option>
+                        <option value="Anxious">Anxious</option>
+                        <option value="Sad">Sad</option>
+                        <option value="Angry">Angry</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tags (comma-separated)</label>
+                    <input type="text" name="tags" class="w-full p-2 border border-gray-300 rounded-md" placeholder="e.g., meditation, morning, therapy">
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" name="share" id="share-with-therapist" class="mr-2">
+                    <label for="share-with-therapist" class="text-sm text-gray-700">Share with Therapist</label>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeNewEntryModal()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
