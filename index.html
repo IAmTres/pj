@@ -37,20 +37,70 @@
             font-family: 'Poppins', sans-serif;
         }
     </style>
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const isHidden = mobileMenu.classList.contains('hidden');
+            
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+                // Animate in
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenu.classList.remove('-translate-y-full');
+                }, 10);
+            } else {
+                // Animate out
+                mobileMenu.classList.add('opacity-0');
+                mobileMenu.classList.add('-translate-y-full');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                }, 300);
+            }
+        }
+
+        // Close mobile menu when clicking on a link
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuLinks = document.querySelectorAll('#mobileMenu a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    toggleMobileMenu();
+                });
+            });
+        });
+    </script>
 </head>
 <body class="bg-gray-50 font-poppins">
     <!-- Navigation -->
     <nav class="bg-white shadow-lg fixed w-full z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
+            <div class="flex justify-between items-center h-20">
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-300" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
                 <div class="flex items-center">
                     <span class="text-3xl font-bold text-primary-600">MindJournal</span>
                 </div>
-                <div class="flex items-center space-x-8">
+                <div class="hidden md:flex items-center space-x-8">
                     <a href="#features" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Features</a>
+                    <a href="#benefits" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">Benefits</a>
                     <a href="#about" class="text-gray-600 hover:text-primary-600 transition-colors duration-300">About</a>
                     <button onclick="window.location.href='user-login.html'" class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">Journal Login</button>
                     <button onclick="window.location.href='psychologist-login.html'" class="bg-primary-700 text-white px-6 py-3 rounded-lg hover:bg-primary-800 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">Psychologist Login</button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden fixed inset-x-0 top-20 bg-white shadow-lg transform -translate-y-full opacity-0 transition-all duration-300 ease-in-out">
+                <div class="flex flex-col space-y-4 p-6">
+                    <a href="#features" class="text-gray-600 hover:text-primary-600 transition-colors duration-300 text-lg">Features</a>
+                    <a href="#benefits" class="text-gray-600 hover:text-primary-600 transition-colors duration-300 text-lg">Benefits</a>
+                    <a href="#about" class="text-gray-600 hover:text-primary-600 transition-colors duration-300 text-lg">About</a>
+                    <button onclick="window.location.href='user-login.html'" class="w-full bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">Journal Login</button>
+                    <button onclick="window.location.href='psychologist-login.html'" class="w-full bg-primary-700 text-white px-6 py-3 rounded-lg hover:bg-primary-800 transition-colors duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">Psychologist Login</button>
                 </div>
             </div>
         </div>
@@ -86,14 +136,11 @@
                             </a>
                         </div>
                     </div>
-                    <div class="relative hidden lg:block">
+                    <div class="relative hidden lg:block transform scale-125 translate-x-12">
                         <div class="absolute inset-0 bg-gradient-to-r from-primary-100 to-primary-200 rounded-3xl transform rotate-3"></div>
-                        <img src="assets/images/digital-journal.png" alt="Digital Journal Interface" class="relative rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-                        <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-center">
-                            <span class="px-6 py-2 bg-white text-lg text-gray-900 rounded-full shadow-lg">
-                                Digital Journaling Reimagined
-                            </span>
-                        </div>
+                        <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80" 
+                             alt="Journal with Coffee" 
+                             class="relative rounded-3xl shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-500 w-full h-auto object-cover"
                     </div>
                 </div>
             </div>
@@ -150,16 +197,125 @@
         </div>
     </div>
 
+    <!-- Benefits Section -->
+    <div id="benefits" class="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-white to-primary-50 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">The Power of Journaling</h2>
+                <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">Discover how daily journaling can transform your mental well-being and personal growth</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 px-2 sm:px-0">
+                <!-- Mental Health Benefits -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex flex-col h-full">
+                    <div class="text-primary-600 mb-4">
+                        <i class="fas fa-brain text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Mental Health & Well-being</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Reduces anxiety and stress through emotional release</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Helps manage depression and improves mood</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Increases self-awareness and emotional intelligence</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Personal Growth -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex flex-col h-full">
+                    <div class="text-primary-600 mb-4">
+                        <i class="fas fa-seedling text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Personal Growth</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Clarifies thoughts and life goals</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Tracks personal progress and achievements</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Enhances problem-solving abilities</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Therapeutic Benefits -->
+                <div class="bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="flex flex-col h-full">
+                    <div class="text-primary-600 mb-4">
+                        <i class="fas fa-heart text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Therapeutic Benefits</h3>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Processes trauma and difficult experiences</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Strengthens therapeutic relationships</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-primary-600 mt-1 mr-2"></i>
+                            <span>Builds resilience and coping mechanisms</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="mt-8 sm:mt-12 md:mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 text-center px-2 sm:px-0">
+                <div class="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-lg sm:rounded-xl">
+                    <div class="text-3xl sm:text-4xl font-bold text-primary-600 mb-2">83%</div>
+                    <p class="text-gray-600">of regular journal writers report improved mental clarity and reduced stress</p>
+                </div>
+                <div class="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-lg sm:rounded-xl">
+                    <div class="text-3xl sm:text-4xl font-bold text-primary-600 mb-2">76%</div>
+                    <p class="text-gray-600">experience better emotional regulation and self-awareness</p>
+                </div>
+                <div class="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-lg sm:rounded-xl">
+                    <div class="text-3xl sm:text-4xl font-bold text-primary-600 mb-2">92%</div>
+                    <p class="text-gray-600">of therapists recommend journaling as a therapeutic tool</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- About Section -->
     <div id="about" class="py-24 bg-white relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-12 mb-20">
+            <div class="flex flex-col md:flex-row items-start justify-between gap-12 mb-20">
                 <div class="flex-1">
                     <h2 class="text-4xl font-bold text-gray-900 mb-6">About MindJournal</h2>
-
                     <p class="text-lg text-gray-600 leading-relaxed">
                         MindJournal combines digital journaling with professional psychological guidance. Built for both personal reflection and therapeutic support, it provides a structured approach to mental wellness through writing.
                     </p>
+                </div>
+                <div class="flex-1 relative">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Journal Interface" 
+                             class="rounded-2xl shadow-2xl w-full object-cover"
+                        <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
+                            <span class="px-6 py-2 bg-white text-lg text-gray-900 rounded-full shadow-lg inline-block">
+                                Digital Journaling Reimagined
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 </div>
                 <div class="flex-1 relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
                     <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
