@@ -1,34 +1,4 @@
 // Dashboard Statistics Management
-let currentMoodTimeframe = 'week';
-
-function refreshStats() {
-    const button = document.querySelector('button[onclick="refreshStats()"]');
-    button.classList.add('animate-spin');
-    
-    // Simulate refresh delay
-    setTimeout(() => {
-        updateDashboardStats();
-        button.classList.remove('animate-spin');
-        
-        // Show refresh notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed bottom-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded flex items-center shadow-lg transform translate-y-full transition-transform duration-300';
-        notification.innerHTML = `
-            <i class="fas fa-check-circle mr-2"></i>
-            <span>Statistics updated</span>
-        `;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.transform = 'translateY(0)';
-        }, 100);
-        
-        setTimeout(() => {
-            notification.style.transform = 'translateY(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
-    }, 800);
-}
 
 function updateDashboardStats() {
     const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
@@ -101,23 +71,6 @@ function updateDashboardStats() {
 }
 
 // Function to calculate mood distribution
-function changeMoodTimeframe(timeframe) {
-    currentMoodTimeframe = timeframe;
-    
-    // Update active state of buttons
-    document.querySelectorAll('[onclick^="changeMoodTimeframe"]').forEach(btn => {
-        if (btn.getAttribute('onclick').includes(timeframe)) {
-            btn.classList.add('bg-primary-100', 'text-primary-600');
-            btn.classList.remove('bg-gray-100', 'text-gray-600');
-        } else {
-            btn.classList.remove('bg-primary-100', 'text-primary-600');
-            btn.classList.add('bg-gray-100', 'text-gray-600');
-        }
-    });
-    
-    updateMoodDistribution();
-}
-
 function getMoodDistribution() {
     const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
     const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -126,11 +79,11 @@ function getMoodDistribution() {
 
     const userEntries = entries.filter(entry => entry.userId === currentUser.id);
     const distribution = {
-        'great': 0,
-        'good': 0,
-        'okay': 0,
-        'down': 0,
-        'rough': 0
+        'Very Happy': 0,
+        'Happy': 0,
+        'Neutral': 0,
+        'Sad': 0,
+        'Very Sad': 0
     };
 
     userEntries.forEach(entry => {
@@ -159,92 +112,11 @@ function getWritingTimeStats() {
     };
 }
 
-function updateMoodDistribution() {
-    const entries = JSON.parse(localStorage.getItem('journalEntries') || '[]');
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    
-    if (!currentUser) return;
-    
-    // Filter entries by timeframe and user
-    const now = new Date();
-    const filteredEntries = entries.filter(entry => {
-        const entryDate = new Date(entry.timestamp);
-        const daysDiff = (now - entryDate) / (1000 * 60 * 60 * 24);
-        
-        return entry.userId === currentUser.id && (
-            (currentMoodTimeframe === 'week' && daysDiff <= 7) ||
-            (currentMoodTimeframe === 'month' && daysDiff <= 30) ||
-            currentMoodTimeframe === 'all'
-        );
-    });
-    
-    // Count moods
-    const moodCounts = {
-        'great': 0,
-        'good': 0,
-        'okay': 0,
-        'down': 0,
-        'rough': 0
-    };
-    
-    filteredEntries.forEach(entry => {
-        if (moodCounts.hasOwnProperty(entry.mood)) {
-            moodCounts[entry.mood]++;
-        }
-    });
-    
-    // Update UI
-    const moodColors = {
-        'great': 'bg-green-500',
-        'good': 'bg-blue-500',
-        'okay': 'bg-yellow-500',
-        'down': 'bg-orange-500',
-        'rough': 'bg-red-500'
-    };
-    
-    const totalEntries = Object.values(moodCounts).reduce((a, b) => a + b, 0);
-    const moodDistributionEl = document.getElementById('moodDistribution');
-    
-    moodDistributionEl.innerHTML = Object.entries(moodCounts)
-        .map(([mood, count]) => {
-            const percentage = totalEntries ? Math.round((count / totalEntries) * 100) : 0;
-            return `
-                <div class="relative">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-medium text-gray-700 capitalize">${mood}</span>
-                        <span class="text-xs font-medium text-gray-700">${percentage}%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                        <div class="${moodColors[mood]} h-2.5 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
-                    </div>
-                </div>
-            `;
-        })
-        .join('');
-    
-    if (totalEntries === 0) {
-        moodDistributionEl.innerHTML = `
-            <div class="text-center py-4 text-gray-500">
-                <i class="fas fa-chart-bar text-3xl mb-2"></i>
-                <p class="text-sm">No entries found for this timeframe</p>
-            </div>
-        `;
-    }
-}
-
-// Initialize with week view
-setTimeout(() => {
-    changeMoodTimeframe('week');
-}, 0);
-
 // Export functions if using modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         updateDashboardStats,
         getMoodDistribution,
-        getWritingTimeStats,
-        refreshStats,
-        changeMoodTimeframe,
-        updateMoodDistribution
+        getWritingTimeStats
     };
 }
