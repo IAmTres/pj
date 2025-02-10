@@ -6,6 +6,7 @@
     <title>PsychologyJournal - Online Psychology Journal Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/profile.css">
     <script src="js/dashboard.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -146,6 +147,61 @@
                                         <div class="absolute top-0 right-0 w-96 h-96 bg-primary-100/30 rounded-full mix-blend-multiply filter blur-xl"></div>
                                         <div class="absolute bottom-0 left-0 w-96 h-96 bg-primary-200/20 rounded-full mix-blend-multiply filter blur-xl"></div>
                                     </div>
+                                    <!-- Profile Section -->
+                                    <div class="profile-section mb-12">
+                                        <div class="profile-header">
+                                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80" 
+                                                 alt="Profile picture" 
+                                                 class="profile-avatar">
+                                            <div class="profile-info">
+                                                <h2 class="profile-name">Sarah Johnson</h2>
+                                                <p class="profile-role">Member since January 2025</p>
+                                                <div class="profile-stats">
+                                                    <div class="stat-item">
+                                                        <div class="stat-value">28</div>
+                                                        <div class="stat-label">Journal Entries</div>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <div class="stat-value">12</div>
+                                                        <div class="stat-label">Shared with Therapist</div>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <div class="stat-value">7</div>
+                                                        <div class="stat-label">Day Streak</div>
+                                                    </div>
+                                                </div>
+                                                <div class="profile-actions">
+                                                    <button class="profile-button profile-button-primary">Edit Profile</button>
+                                                    <button class="profile-button profile-button-secondary">View Progress</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="profile-preferences">
+                                            <h3 class="preferences-title">Preferences</h3>
+                                            <div class="preference-item">
+                                                <span class="preference-label">Email Notifications</span>
+                                                <label class="preference-toggle">
+                                                    <input type="checkbox" class="toggle-input" checked>
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="preference-item">
+                                                <span class="preference-label">Daily Reminders</span>
+                                                <label class="preference-toggle">
+                                                    <input type="checkbox" class="toggle-input" checked>
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                            </div>
+                                            <div class="preference-item">
+                                                <span class="preference-label">Auto-share with Therapist</span>
+                                                <label class="preference-toggle">
+                                                    <input type="checkbox" class="toggle-input">
+                                                    <span class="toggle-slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Dashboard Header -->
                                     <div class="flex justify-between items-center mb-8">
                                         <h2 class="text-2xl font-bold text-gray-900">Your Journal Dashboard</h2>
